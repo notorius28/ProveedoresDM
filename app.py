@@ -8,7 +8,7 @@ import importlib.util
 st.title("Aplicación de Procesamiento de Archivos Excel")
 
 # Selector de procesador
-procesadores_disponibles = glob.glob("procesadores/*.py")
+procesadores_disponibles = glob.glob("procesadores/proveedor*.py")
 procesador_seleccionado = st.selectbox("Selecciona un procesador:", procesadores_disponibles)
 
 # Función para cargar el archivo
@@ -29,11 +29,11 @@ if "archivo_exportado" not in st.session_state:
 if uploaded_file:
     df = cargar_archivo(uploaded_file)
     if df is not None:
-        st.write("Aquí está tu DataFrame:")
+        st.write("Aquí están los datos del fichero original:")
         st.dataframe(df)
         
         # Botón para procesar el DataFrame
-        if st.button("Procesar DataFrame"):
+        if st.button("Procesar Fichero"):
             try:
                 # Importar el procesador seleccionado dinámicamente
                 spec = importlib.util.spec_from_file_location(procesador_seleccionado, procesador_seleccionado)
@@ -42,15 +42,15 @@ if uploaded_file:
                 
                 # Llamar a la función procesarExcel y mostrar el DataFrame procesado
                 df_procesado = procesador_module.procesarExcel(df)
-                st.write("DataFrame procesado:")
+                st.write("Fichero procesado:")
                 st.dataframe(df_procesado)
                 
                 # Exportar el DataFrame procesado y actualizar el estado
                 df_procesado.to_excel("archivo_procesado.xlsx", index=False)
-                st.success("El DataFrame procesado ha sido exportado exitosamente.")
+                st.success("El fichero procesado ha sido exportado exitosamente.")
                 st.session_state.archivo_exportado = True
             except Exception as e:
-                st.error(f"¡Error al procesar el DataFrame: {str(e)}")
+                st.error(f"¡Error al procesar el fichero: {str(e)}")
                 st.error(traceback.format_exc())
 
 # Mostrar el botón de descarga si el archivo ha sido exportado
