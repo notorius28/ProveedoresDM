@@ -3,6 +3,8 @@ import pandas as pd
 import glob
 import traceback
 import importlib.util
+import datetime
+import pandas_xlwt
 
 # Título de la aplicación
 st.title("Aplicación de Procesamiento de Archivos Excel")
@@ -45,8 +47,9 @@ if uploaded_file:
                 st.write("Fichero procesado:")
                 st.dataframe(df_procesado)
                 
-                # Exportar el DataFrame procesado y actualizar el estado
-                df_procesado.to_excel("archivo_procesado.xlsx", index=False)
+                #Exportamos el fichero en formato excel 97/2000 (XLS)
+                df_procesado.to_excel('archivo_procesado.xls',engine='xlwt',index=False)
+
                 st.success("El fichero procesado ha sido exportado exitosamente.")
                 st.session_state.archivo_exportado = True
             except Exception as e:
@@ -56,10 +59,17 @@ if uploaded_file:
 # Mostrar el botón de descarga si el archivo ha sido exportado
 if st.session_state.archivo_exportado:
     st.markdown("### Descargar el archivo procesado exportado")
-    with open("archivo_procesado.xlsx", "rb") as file:
+    with open("archivo_procesado.xls", "rb") as file:
+        
+        # Renombramos el fichero 
+        now = datetime.datetime.now()
+        timestamp = now.strftime("%Y%m%d_%H%M%S")
+        filename_out = f'procesado_{timestamp}.xls'
+
+        # Botón de descarga
         st.download_button(
             label="Descargar Excel Procesado",
             data=file,
-            file_name="archivo_procesado.xlsx",
+            file_name=filename_out,
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         )

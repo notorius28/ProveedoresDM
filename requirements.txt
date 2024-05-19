@@ -1,3 +1,4 @@
 pandas-xlwt
 openpyxl
 streamlit
+watchdog
