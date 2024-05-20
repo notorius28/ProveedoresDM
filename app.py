@@ -58,7 +58,7 @@ if uploaded_file:
 
 # Mostrar el botón de descarga si el archivo ha sido exportado
 if st.session_state.archivo_exportado:
-    st.markdown("### Descargar el archivo procesado exportado")
+    st.markdown("### Pulsa este botón para descargar el aarchivo procesado y exportado")
     with open("archivo_procesado.xls", "rb") as file:
         
         # Renombramos el fichero 
@@ -71,5 +71,6 @@ if st.session_state.archivo_exportado:
             label="Descargar Excel Procesado",
             data=file,
             file_name=filename_out,
-            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            mime="application/vnd.ms-excel."
+            #mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         )
