@@ -6,8 +6,13 @@ import importlib.util
 import datetime
 import pandas_xlwt
 
-# Título de la aplicación
-st.title("Aplicación de Procesamiento de Archivos Excel")
+# Inicializar el estado si no está presente
+if 'archivo_exportado' not in st.session_state:
+    st.session_state['archivo_exportado'] = False
+
+
+# Título de la aplicación y ocupar el ancho completo de página
+st.set_page_config(page_title="Aplicación de Procesamiento de Archivos Excel", layout="wide")
 
 # Selector de procesador
 procesadores_disponibles = glob.glob("procesadores/proveedor*.py")
@@ -21,11 +26,7 @@ def cargar_archivo(uploaded_file):
     return None
 
 # Subir el archivo
-uploaded_file = st.file_uploader("Sube tu archivo Excel", type=["xlsx"])
-
-# Variable de estado para controlar la exportación
-if "archivo_exportado" not in st.session_state:
-    st.session_state.archivo_exportado = False
+uploaded_file = st.file_uploader("Sube tu archivo Excel", type=["xlsx","xls"])
 
 # Mostrar el DataFrame y ejecutar el procesamiento
 if uploaded_file:
@@ -56,21 +57,20 @@ if uploaded_file:
                 st.error(f"¡Error al procesar el fichero: {str(e)}")
                 st.error(traceback.format_exc())
 
-# Mostrar el botón de descarga si el archivo ha sido exportado
-if st.session_state.archivo_exportado:
-    st.markdown("### Pulsa este botón para descargar el aarchivo procesado y exportado")
-    with open("archivo_procesado.xls", "rb") as file:
-        
-        # Renombramos el fichero 
-        now = datetime.datetime.now()
-        timestamp = now.strftime("%Y%m%d_%H%M%S")
-        filename_out = f'procesado_{timestamp}.xls'
+        # Mostrar el botón de descarga si el archivo ha sido exportado
+        if st.session_state['archivo_exportado']:
+            st.markdown("### Pulsa este botón para descargar el aarchivo procesado y exportado")
+            with open("archivo_procesado.xls", "rb") as file:
+                
+                # Renombramos el fichero 
+                now = datetime.datetime.now()
+                timestamp = now.strftime("%Y%m%d_%H%M%S")
+                filename_out = f'procesado_{timestamp}.xls'
 
-        # Botón de descarga
-        st.download_button(
-            label="Descargar Excel Procesado",
-            data=file,
-            file_name=filename_out,
-            mime="application/vnd.ms-excel."
-            #mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-        )
+                # Botón de descarga
+                st.download_button(
+                    label="Descargar Excel Procesado",
+                    data=file,
+                    file_name=filename_out,
+                    mime="application/vnd.ms-excel."
+                )

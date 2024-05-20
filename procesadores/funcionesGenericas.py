@@ -1,5 +1,6 @@
 import re
 from datetime import datetime
+import json
 
 def obtener_fecha_desde_texto(text):
     # Definir la expresión regular para extraer la fecha con y sin año
@@ -43,11 +44,15 @@ def eliminar_dobles_espacios(texto):
         return texto
 
 def mover_the_al_final(texto):
-    palabras = texto.split()
-    if len(palabras) >= 2 and palabras[0].upper() == 'THE':
-        return ' '.join(palabras[1:] + [', THE']).replace(' , THE',', THE')
+    #Comprobamos primero que la cadena es texto y está rellena
+    if isinstance(texto, str) and texto.strip():
+        palabras = texto.split()
+        if len(palabras) >= 2 and palabras[0].upper() == 'THE':
+            return ' '.join(palabras[1:] + [', THE']).replace(' , THE',', THE')
+        else:
+            return texto
     else:
-        return texto
+        return(texto)
     
 def texto_es_numerico(value):
     try:
@@ -56,3 +61,11 @@ def texto_es_numerico(value):
     except ValueError:
         return False
 
+def mapearAutor(data, column):
+    #Leemos el diccionario de formatos para mapearlos con el fichero
+    with open('diccionarios/artistas.json', 'r', encoding='utf-8') as f:
+        dict_autor = json.load(f)
+    data['AutorNormalizado'] = data[column]
+    data[column] = data[column].map(dict_autor)
+    data[column] = data[column].fillna(data['AutorNormalizado'])
+    return data

@@ -2,3 +2,4 @@ pandas-xlwt
 openpyxl
 streamlit
 watchdog
+xlrd

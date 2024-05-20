@@ -1,12 +1,13 @@
 import pandas as pd
 import procesadores.funcionesGenericas as fg
+import json
 
 def procesarExcel(data):
 
     num_filas = data.shape[0]
     print("El número de filas del DataFrame es:", num_filas)
 
-    # Comprobamos si, en la primera fila, viene un texto con una fecha para usarla luego como Fecha de Lanzamiento
+    # Comprobar si, en la primera fila, viene un texto con una fecha para usarla luego como Fecha de Lanzamiento
     release_date = fg.obtener_fecha_desde_texto(data.columns[0])
     print(release_date)
 
@@ -51,27 +52,27 @@ def procesarExcel(data):
 
     #Para el Artista, ponemos el artículo THE al final precedido de una coma
     data['Autor'] = data['Autor'].apply(fg.mover_the_al_final)
-
     #Aplicamos canonización de datos a términos como Varios Artistas o BSO
-    dict_autor = {'VARIOUS ARTISTS': 'VARIOS ARTISTAS', 'VARIOUS': 'VARIOS ARTISTAS', 'VARIOS': 'VARIOS ARTISTAS', 'VARIOS BSO': 'BANDA SONORA', 'VARIOS OST': 'BANDA SONORA', 'BSO' : 'BANDA SONORA' }
-    data['AutorNormalizado'] = data['Autor']
-    data['Autor'] = data['Autor'].map(dict_autor)
-    data['Autor'] = data['Autor'].fillna(data['AutorNormalizado'])
+    data = fg.mapearAutor(data, 'Autor')
 
     #Rellenamos todas las fechas de lanzamiento con la que hemos obtenido de la primera celda del excel
     data['Fecha Lanzamiento'] = pd.to_datetime(release_date)
     data['Fecha Lanzamiento'] = data['Fecha Lanzamiento'].dt.strftime('%d-%m-%Y')
 
-    #El sello se rellena con "UNIVERSAL"
+    #Rellenamos el sello con el valor "UNIVERSAL"
     data['Sello'] = 'UNIVERSAL'
 
+    #ordenamos columnas
     columnas_ordenadas = ['Autor', 'Título', 'Sello', 'Fecha Lanzamiento', 'Referencia Proveedor', 'Código de Barras', 'Formato', 'Estilo','Comentarios','Precio Compra']
     data = data[columnas_ordenadas]
 
     #Ponemos todos los textos en mayúsculas
     data = data.applymap(lambda x: x.upper() if isinstance(x, str) else x)
 
-    dict_formats = {'LP': 'LP','CD': 'CD', 'VINILO':'LP'}
+    #Leemos el diccionario de formatos para mapearlos con el fichero
+    with open('diccionarios/formatos.json', 'r', encoding='utf-8') as f:
+        dict_formats = json.load(f)
+    
     # Obtener los valores que no tienen equivalencia en el diccionario para la columna 'A'
     formatos_sin_equivalencia = data['Formato'].loc[~data['Formato'].isin(dict_formats.keys())]
 
