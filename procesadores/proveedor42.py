@@ -1,8 +1,12 @@
 import pandas as pd
 import procesadores.funcionesGenericas as fg
 import json
+import numpy as np
 
 def procesarExcel(data):
+
+    # Renombramos las coumnas
+    data.columns = ['Product Reference Number', 'Artist', 'Title', 'Local Marketing Company', 'Conf.', 'Component units', 'Release date', 'Price code', 'Unit PPD', 'Currency', 'Av. Stock']
 
     #Forzamos que la referencia sea un campo texto
     data['Product Reference Number'] = data['Product Reference Number'].astype(str)
@@ -44,7 +48,18 @@ def procesarExcel(data):
     #Quitamos del excel de salida las filas sin formato mapeados
     data = data.dropna(subset=['Formato'])
 
-    #ordenamos columnas
+    #Añadimos el número de items (lps, cds) al formato
+    def concatenar_tipo(row):
+        if not pd.isna(row['Component units']) and row['Component units'] > 1:
+            unidades = row['Component units']
+            formato = row['Formato']
+            return f'{unidades}{formato}'
+        else:
+            return row['Formato']
+
+    data['Formato'] = data.apply(concatenar_tipo, axis=1)
+
+    #Ordenamos columnas
     columnas_ordenadas = ['Autor', 'Título', 'Sello', 'Fecha Lanzamiento', 'Referencia Proveedor', 'Código de Barras', 'Formato', 'Estilo','Comentarios','Precio Compra']
     data = data[columnas_ordenadas]
 
