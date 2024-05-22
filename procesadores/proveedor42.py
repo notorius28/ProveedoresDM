@@ -48,17 +48,6 @@ def procesarExcel(data):
     #Quitamos del excel de salida las filas sin formato mapeados
     data = data.dropna(subset=['Formato'])
 
-    #Añadimos el número de items (lps, cds) al formato
-    def concatenar_tipo(row):
-        if not pd.isna(row['Component units']) and row['Component units'] > 1:
-            unidades = row['Component units']
-            formato = row['Formato']
-            return f'{unidades}{formato}'
-        else:
-            return row['Formato']
-
-    data['Formato'] = data.apply(concatenar_tipo, axis=1)
-
     #Ordenamos columnas
     columnas_ordenadas = ['Autor', 'Título', 'Sello', 'Fecha Lanzamiento', 'Referencia Proveedor', 'Código de Barras', 'Formato', 'Estilo','Comentarios','Precio Compra']
     data = data[columnas_ordenadas]
