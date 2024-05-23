@@ -18,6 +18,10 @@ st.set_page_config(page_title="Aplicación de Procesamiento de Archivos Excel", 
 procesadores_disponibles = glob.glob("procesadores/proveedor*.py")
 procesador_seleccionado = st.selectbox("Selecciona un procesador:", procesadores_disponibles)
 
+# Mostramos un mensaje específico para algunos procesadores
+if procesador_seleccionado == "procesadores/proveedor42.py":
+    st.write("Para este tipo de fichero, solo se procesarán los lanzamientos del último mes.")
+
 # Función para cargar el archivo
 def cargar_archivo(uploaded_file):
     if uploaded_file is not None:

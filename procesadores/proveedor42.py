@@ -1,12 +1,26 @@
 import pandas as pd
 import procesadores.funcionesGenericas as fg
 import json
-import numpy as np
+from datetime import datetime, timedelta
 
 def procesarExcel(data):
 
     # Renombramos las coumnas
     data.columns = ['Product Reference Number', 'Artist', 'Title', 'Local Marketing Company', 'Conf.', 'Component units', 'Release date', 'Price code', 'Unit PPD', 'Currency', 'Av. Stock']
+
+    
+    ##Filtramos en este procesador para retornar lanzamientos de los últimos 30 días##
+    data['Release date'] = pd.to_datetime(data['Release date'])
+    # Obtener la fecha actual
+    hoy = datetime.today()
+    # Calcular la fecha correspondiente a 30 días antes
+    hace_un_mes = hoy - timedelta(days=30)
+
+    # Filtrar el DataFrame para incluir solo los lanzamientos de los últimos 30 días
+    data = data[data['Release date'] >= hace_un_mes]
+
+    #Convertimos la fecha de lanzamiento a formato dd/mm/YYYY
+    data['Release date'] = data['Release date'].dt.strftime('%d-%m-%Y')
 
     #Forzamos que la referencia sea un campo texto
     data['Product Reference Number'] = data['Product Reference Number'].astype(str)
@@ -26,10 +40,6 @@ def procesarExcel(data):
     data['Artist'] = data['Artist'].apply(fg.mover_the_al_final)
     #Aplicamos canonización de datos a términos como Varios Artistas o BSO
     data = fg.mapearAutor(data, 'Artist')
-
-    #Convertimos la fecha de lanzamiento a formato dd/mm/YYYY
-
-    data['Release date'] = data['Release date'].dt.strftime('%d-%m-%Y')
 
     #Renombramos las columnas
     data.rename(columns={"Artist":"Autor","Title":"Título","Local Marketing Company":"Sello","Release date":"Fecha Lanzamiento", "Product Reference Number":"Referencia Proveedor", "Conf.":"Formato", "Unit PPD":"Precio Compra"}, inplace=True)
