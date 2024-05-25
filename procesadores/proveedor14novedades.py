@@ -22,7 +22,7 @@ def procesarExcel(data):
     #Para el Autora, ponemos el artículo THE al final precedido de una coma
     data['Autor'] = data['Autor'].apply(fg.mover_the_al_final)
     #Aplicamos canonización de datos a términos como Varios Artistas o BSO
-    data = fg.mapearAutor(data, 'Autor')
+    data = fg.mapear_autor(data, 'Autor')
 
     #Convertimos la fecha de lanzamiento a formato dd/mm/YYYY
     data['Fecha Lanzamiento'] = data['Fecha Lanzamiento'].dt.strftime('%d-%m-%Y')
@@ -46,6 +46,9 @@ def procesarExcel(data):
     print(formatos_sin_equivalencia)
     data['Formato'] = data['Formato'].map(dict_formats)
 
+    #Creamos un dataframe aparte con las filas excluidas por no encontrar un formato mapeado
+    data_sin_formato = data.loc[data['Formato'].isin(formatos_sin_equivalencia)]
+
     #Quitamos del excel de salida las filas sin formato mapeados
     data = data.dropna(subset=['Formato'])
 
@@ -56,4 +59,4 @@ def procesarExcel(data):
     #Ponemos todos los textos en mayúsculas
     data = data.applymap(lambda x: x.upper() if isinstance(x, str) else x)
 
-    return(data)
+    return(data, data_sin_formato)

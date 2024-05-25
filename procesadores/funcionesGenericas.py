@@ -61,11 +61,36 @@ def texto_es_numerico(value):
     except ValueError:
         return False
 
-def mapearAutor(data, column):
+def mapear_autor(data, column):
     #Leemos el diccionario de formatos para mapearlos con el fichero
     with open('diccionarios/artistas.json', 'r', encoding='utf-8') as f:
         dict_autor = json.load(f)
     data['AutorNormalizado'] = data[column]
     data[column] = data[column].map(dict_autor)
     data[column] = data[column].fillna(data['AutorNormalizado'])
+    return data
+
+def extraer_fecha(texto):
+    # Definir la expresión regular para fechas dd/mm/YYYY
+    regex = r"\b(\d{2}/\d{2}/\d{4})\b"
+    # Buscar la primera coincidencia en el texto
+    coincidencia = re.search(regex, texto)    
+    # Si hay una coincidencia, devolver el valor encontrado
+    if coincidencia:
+        return coincidencia.group(1)
+    else:
+        return None
+    
+def extraer_edicion_del_formato(data, dict_formats):
+    # Ordenar términos por longitud descendente para evitar coincidencias parciales
+    terminos = list(dict_formats.keys())
+    terminos.sort(key=len, reverse=True)
+
+    #Para los formatos que incluyen variación de color o edición, dejamos el formato solo como LP y añadimos la variación al Título
+    patronFormato = r'^(' + '|'.join(re.escape(term) for term in terminos) + r')\s+(.+)'
+    data[['FormatoIzq', 'VariaciónDer']] = data['Formato'].str.extract(patronFormato, expand=True)
+    conjuntoConVariacion = data['VariaciónDer'].notna()
+    data.loc[conjuntoConVariacion, 'Título'] = data.loc[conjuntoConVariacion, 'Título'].astype(str) + ' (EDICIÓN ' + data['FormatoIzq'] + ' ' + data.loc[conjuntoConVariacion, 'VariaciónDer'] + ')'
+    data.loc[conjuntoConVariacion, 'Formato'] = data['FormatoIzq']
+
     return data

@@ -1,11 +1,9 @@
 import pandas as pd
 import procesadores.funcionesGenericas as fg
 import json
+import streamlit as st
 
 def procesarExcel(data):
-
-    num_filas = data.shape[0]
-    print("El número de filas del DataFrame es:", num_filas)
 
     # Comprobar si, en la primera fila, viene un texto con una fecha para usarla luego como Fecha de Lanzamiento
     release_date = fg.obtener_fecha_desde_texto(data.columns[0])
@@ -53,7 +51,7 @@ def procesarExcel(data):
     #Para el Artista, ponemos el artículo THE al final precedido de una coma
     data['Autor'] = data['Autor'].apply(fg.mover_the_al_final)
     #Aplicamos canonización de datos a términos como Varios Artistas o BSO
-    data = fg.mapearAutor(data, 'Autor')
+    data = fg.mapear_autor(data, 'Autor')
 
     #Rellenamos todas las fechas de lanzamiento con la que hemos obtenido de la primera celda del excel
     data['Fecha Lanzamiento'] = pd.to_datetime(release_date)
@@ -75,12 +73,15 @@ def procesarExcel(data):
     
     # Obtener los valores que no tienen equivalencia en el diccionario para la columna 'A'
     formatos_sin_equivalencia = data['Formato'].loc[~data['Formato'].isin(dict_formats.keys())]
-
     print(formatos_sin_equivalencia)
 
-    data['Formato'] = data['Formato'].map(dict_formats)
+    #Creamos un dataframe aparte con las filas excluidas por no encontrar un formato mapeado
+    data_sin_formato = data.loc[data['Formato'].isin(formatos_sin_equivalencia)]
 
-    #Quitamos del excel de salida las filas sin formato mapeados
+    #Mapeamos los formatos encontrados
+    data['Formato'] = data['Formato'].map(dict_formats)    
+
+    #Quitamos de la exportación de salida las filas sin formato mapeados
     data = data.dropna(subset=['Formato'])
 
-    return data
+    return data, data_sin_formato
