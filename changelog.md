@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Correcciones
 
+- En el proveedor 17 multipestaña, la fecha se toma del nombre de la pestaña en lugar de la primera celda
 - Solucionado un error al obtener la fecha de un texto, donde no se interpretaba como año textos como "23" o "24"
 
 ## [1.0.4] 2024/05/25

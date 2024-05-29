@@ -59,7 +59,7 @@ def procesar_excel_multiples_tabs(file):
 
     for hoja in hojas:
         df_hoja = pd.read_excel(file, sheet_name=hoja)
-        df_procesado, df_procesado_sin_formato = procesador_module.procesarExcel(df_hoja)
+        df_procesado, df_procesado_sin_formato = procesador_module.procesarExcel(df_hoja, hoja)
         df_procesado_total = pd.concat([df_procesado_total, df_procesado], ignore_index=True)
         df_procesado_sin_formato_total = pd.concat([df_procesado_sin_formato_total, df_procesado_sin_formato], ignore_index=True)
 

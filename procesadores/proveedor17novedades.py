@@ -3,9 +3,12 @@ import procesadores.funcionesGenericas as fg
 import json
 import streamlit as st
 
-def procesarExcel(data):
+def procesarExcel(data, nombre_hoja):
     # Obtener la fecha de lanzamiento desde el texto en la primera fila
-    release_date = fg.obtener_fecha_desde_texto(data.columns[0])
+    if nombre_hoja:
+        release_date = fg.obtener_fecha_desde_texto(nombre_hoja)
+    else: 
+        release_date = fg.obtener_fecha_desde_texto(data.columns[0])
 
     # Encontrar la fila que contiene 'REFERENCIA' o está completamente llena
     referencia_row = data.apply(lambda row: row.notnull().all() or row.iloc[0] == 'REFERENCIA', axis=1).idxmax()

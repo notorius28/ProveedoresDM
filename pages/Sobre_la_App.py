@@ -1,8 +1,7 @@
 import streamlit as st
 
 CHANGELOG_LINES_TO_SKIP = 6  # header lines
-DISPLAY_LATEST = 1  # number or latest versions to display
-
+DISPLAY_LATEST = 2  # number or latest versions to display
 
 def show_changelog():
     # suppose that ChangeLog.md is located at the same folder as Streamlit app
