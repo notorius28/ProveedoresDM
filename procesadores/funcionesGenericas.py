@@ -2,9 +2,12 @@ import re
 from datetime import datetime
 import json
 
+import re
+from datetime import datetime
+
 def obtener_fecha_desde_texto(text):
-    # Definir la expresión regular para extraer la fecha con y sin año
-    date_pattern_with_year = r'(\d{1,2})\s(\w+)\s(\d{2})'
+    # Definir la expresión regular para extraer la fecha con año de dos o cuatro dígitos, y sin año
+    date_pattern_with_year = r'(\d{1,2})\s(\w+)\s(\d{2,4})'
     date_pattern_without_year = r'(\d{1,2})\s(\w+)'
     
     # Intentar encontrar una fecha con año primero
@@ -32,10 +35,16 @@ def obtener_fecha_desde_texto(text):
     # Convertir el mes a un número
     month_num = months.get(month.upper())
     if month_num:
-        # Asumimos que el año es del siglo XXI
-        date_str = f"20{year}-{month_num}-{day.zfill(2)}"
+        # Convertir el año a un entero y ajustar al siglo XXI si es necesario
+        year = int(year)
+        if year < 100:  # Si el año tiene dos dígitos
+            year += 2000
+        
+        # Formatear la fecha como cadena
+        date_str = f"{year}-{month_num}-{day.zfill(2)}"
         return date_str
     return None
+
 
 def eliminar_dobles_espacios(texto):
     if isinstance(texto, str):

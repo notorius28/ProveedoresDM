@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.5] 2024/05/29
+
+### Novedades 
+
+- Añadida versión inicial del tratamiento de ficheros multipestaña o multitabs, incorporado al procesador 17
+
+### Correcciones
+
+- Solucionado un error al obtener la fecha de un texto, donde no se interpretaba como año textos como "23" o "24"
+
 ## [1.0.4] 2024/05/25
 
 ### Novedades 
