@@ -4,6 +4,7 @@ import glob
 import traceback
 import importlib.util
 from datetime import datetime, timedelta
+import procesadores.funcionesGenericas as fg
 import pandas_xlwt
 
 # Inicializar el estado si no está presente
@@ -57,29 +58,29 @@ def procesar_excel_multiples_tabs(file):
     progress_text = str(progreso) + "/" + str(num_hojas) +  " pestañas procesadas"
     progress_bar = st.progress(0, text=progress_text)
 
-    for hoja in hojas:
-        df_hoja = pd.read_excel(file, sheet_name=hoja)
-        df_procesado, df_procesado_sin_formato = procesador_module.procesarExcel(df_hoja, hoja)
-        df_procesado_total = pd.concat([df_procesado_total, df_procesado], ignore_index=True)
-        df_procesado_sin_formato_total = pd.concat([df_procesado_sin_formato_total, df_procesado_sin_formato], ignore_index=True)
-
-        # Actualizar la barra de progreso
-        progreso += 1
-        progress_text = str(progreso) + "/" + str(num_hojas) +  " pestañas procesadas"
-        progress_bar.progress(progreso / num_hojas, text=progress_text)
-
-    
-    ##Filtramos en este flujo para retornar lanzamientos de los últimos 30 días##
-    df_procesado_total['Fecha Lanzamiento'] = pd.to_datetime(df_procesado_total['Fecha Lanzamiento'])
-    df_procesado_sin_formato_total['Fecha Lanzamiento'] = pd.to_datetime(df_procesado_sin_formato_total['Fecha Lanzamiento'])
     # Obtener la fecha actual
     hoy = datetime.today()
     # Calcular la fecha correspondiente a 30 días antes
     hace_un_mes = hoy - timedelta(days=30)
 
-    # Filtrar los DataFrame para incluir solo los lanzamientos de los últimos 30 días
-    df_procesado_total = df_procesado_total[df_procesado_total['Fecha Lanzamiento'] >= hace_un_mes]
-    df_procesado_sin_formato_total = df_procesado_sin_formato_total[df_procesado_sin_formato_total['Fecha Lanzamiento'] >= hace_un_mes]
+    for hoja in hojas:
+        #Solo procesamos las pestañas correspondientes a fechas de los últimos 30 días
+        fecha_tab = datetime.strptime(fg.obtener_fecha_desde_texto(hoja),'%Y-%m-%d') 
+        print (fecha_tab)
+        if fecha_tab >= hace_un_mes:
+            df_hoja = pd.read_excel(file, sheet_name=hoja)
+            df_procesado, df_procesado_sin_formato = procesador_module.procesarExcel(df_hoja, hoja)
+            df_procesado_total = pd.concat([df_procesado_total, df_procesado], ignore_index=True)
+            df_procesado_sin_formato_total = pd.concat([df_procesado_sin_formato_total, df_procesado_sin_formato], ignore_index=True)
+
+        # Actualizar la barra de progreso
+        progreso += 1
+        progress_text = str(progreso) + "/" + str(num_hojas) +  " pestañas procesadas"
+        progress_bar.progress(progreso / num_hojas, text=progress_text)
+    
+    # Convertimos la fecha de lanzamiento a formato fecha para la exportación, indicando que el día va al principio
+    df_procesado_total['Fecha Lanzamiento'] = pd.to_datetime(df_procesado_total['Fecha Lanzamiento'], dayfirst=True)
+    df_procesado_sin_formato_total['Fecha Lanzamiento'] = pd.to_datetime(df_procesado_sin_formato_total['Fecha Lanzamiento'], dayfirst=True)
 
     #Convertimos la fecha de lanzamiento a formato dd/mm/YYYY
     df_procesado_total['Fecha Lanzamiento'] = df_procesado_total['Fecha Lanzamiento'].dt.strftime('%d-%m-%Y')
