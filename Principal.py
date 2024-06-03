@@ -135,7 +135,7 @@ if uploaded_file:
                 with open("archivo_procesado.xls", "rb") as file:
                     
                     # Renombramos el fichero 
-                    now = datetime.datetime.now()
+                    now = datetime.now()
                     timestamp = now.strftime("%Y%m%d_%H%M%S")
                     filename_out = f'procesado_{timestamp}.xls'
 
