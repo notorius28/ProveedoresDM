@@ -3,9 +3,16 @@ import procesadores.funcionesGenericas as fg
 import json
 import streamlit as st
 
-def procesarExcel(data, nombre_hoja):
-    # Obtener la fecha de lanzamiento desde el texto en la primera fila
+def procesarExcel(data, nombre_hoja = None):
+
+    # Utilizamos una variable para controlar si el excel es multipestaña o no
     if nombre_hoja:
+        multitab = True
+    else:
+        multitab = False
+
+    # Obtener la fecha de lanzamiento desde el texto en la primera fila
+    if multitab:
         release_date = fg.obtener_fecha_desde_texto(nombre_hoja)
     else: 
         release_date = fg.obtener_fecha_desde_texto(data.columns[0])
@@ -52,8 +59,9 @@ def procesarExcel(data, nombre_hoja):
     # Rellenar todas las fechas de lanzamiento con la fecha obtenida
     df_cleaned['Fecha Lanzamiento'] = release_date.strftime('%d-%m-%Y')
 
-    # Rellenar 'Sello' con 'UNIVERSAL'
-    df_cleaned['Sello'] = 'UNIVERSAL'
+    if multitab == False:
+        # Rellenar 'Sello' con 'UNIVERSAL'
+        df_cleaned['Sello'] = 'UNIVERSAL'
 
     # Ordenar columnas
     columnas_ordenadas = ['Autor', 'Título', 'Sello', 'Fecha Lanzamiento', 'Referencia Proveedor', 'Código de Barras', 'Formato', 'Estilo','Comentarios','Precio Compra']
