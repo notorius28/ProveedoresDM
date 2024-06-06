@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.8] 2024/06/06
+
+## Novedades
+
+- Añadido el procesador para ficheros completos del proveedor 23
+
+### Correcciones
+
+- Algunos proveedores no mostraban en pantalla los registros que no tienen coincidencia por formato en el diccionario
+
 ## [1.0.7] 2024/06/04
 
 ### Correcciones
