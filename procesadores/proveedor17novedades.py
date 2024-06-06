@@ -2,6 +2,7 @@ import pandas as pd
 import procesadores.funcionesGenericas as fg
 import json
 import streamlit as st
+import re
 
 def procesarExcel(data, nombre_hoja = None):
 
@@ -21,66 +22,79 @@ def procesarExcel(data, nombre_hoja = None):
     referencia_row = data.apply(lambda row: row.notnull().all() or row.iloc[0] == 'REFERENCIA', axis=1).idxmax()
 
     # Eliminar filas anteriores a la fila de referencia
-    df_cleaned = data.iloc[referencia_row:].reset_index(drop=True)
+    data = data.iloc[referencia_row:].reset_index(drop=True)
 
     # Si la primera fila es 'REFERENCIA', usarla como encabezados
-    if df_cleaned.iloc[0, 0] == 'REFERENCIA':
-        df_cleaned.columns = df_cleaned.iloc[0]
-        df_cleaned = df_cleaned[1:].reset_index(drop=True)
+    if data.iloc[0, 0] == 'REFERENCIA':
+        data.columns = data.iloc[0]
+        data = data[1:].reset_index(drop=True)
 
     # Eliminar filas completamente vacías
-    df_cleaned = df_cleaned.dropna(how='all')
+    data = data.dropna(how='all')
 
     # Renombrar las columnas
-    df_cleaned.columns = ['Referencia Proveedor', 'GP', 'Precio Compra', 'Formato', 'Autor', 'Título', 'Sello']
+    data.columns = ['Referencia Proveedor', 'GP', 'Precio Compra', 'Formato', 'Autor', 'Título', 'Sello']
 
     # Filtrar filas donde 'REFERENCIA' no es un número
-    df_cleaned = df_cleaned[df_cleaned['Referencia Proveedor'].astype(str).apply(str.isdigit)]
+    data = data[data['Referencia Proveedor'].astype(str).apply(str.isdigit)]
 
     # Forzar que la referencia sea un campo de texto
-    df_cleaned['Referencia Proveedor'] = df_cleaned['Referencia Proveedor'].astype(str)
+    data['Referencia Proveedor'] = data['Referencia Proveedor'].astype(str)
 
     # Usar la referencia para crear y copiar datos a 'Código de Barras'
-    df_cleaned['Código de Barras'] = df_cleaned['Referencia Proveedor']
+    data['Código de Barras'] = data['Referencia Proveedor']
 
     # Crear columnas vacías para 'Estilo' y 'Comentarios'
-    df_cleaned['Estilo'] = ''
-    df_cleaned['Comentarios'] = ''
+    data['Estilo'] = ''
+    data['Comentarios'] = ''
 
     # Mover 'THE' al final de 'Autor'
-    df_cleaned['Autor'] = df_cleaned['Autor'].apply(fg.mover_the_al_final)
+    data['Autor'] = data['Autor'].apply(fg.mover_the_al_final)
     # Mapear términos como 'Varios Artistas' o 'BSO'
-    df_cleaned = fg.mapear_autor(df_cleaned, 'Autor')
+    data = fg.mapear_autor(data, 'Autor')
 
     # Convertir release_date a datetime si no lo es ya
     if not isinstance(release_date, pd.Timestamp):
         release_date = pd.to_datetime(release_date)
 
     # Rellenar todas las fechas de lanzamiento con la fecha obtenida
-    df_cleaned['Fecha Lanzamiento'] = release_date.strftime('%d-%m-%Y')
+    data['Fecha Lanzamiento'] = release_date.strftime('%d-%m-%Y')
 
     if multitab == False:
         # Rellenar 'Sello' con 'UNIVERSAL'
-        df_cleaned['Sello'] = 'UNIVERSAL'
+        data['Sello'] = 'UNIVERSAL'
 
-    # Ordenar columnas
-    columnas_ordenadas = ['Autor', 'Título', 'Sello', 'Fecha Lanzamiento', 'Referencia Proveedor', 'Código de Barras', 'Formato', 'Estilo','Comentarios','Precio Compra']
-    df_cleaned = df_cleaned[columnas_ordenadas]
+    #Ponemos todos los textos en mayúsculas
+    data = data.applymap(lambda x: x.upper() if isinstance(x, str) else x)
 
-    # Convertir texto a mayúsculas
-    df_cleaned = df_cleaned.applymap(lambda x: x.upper() if isinstance(x, str) else x)
-
-    # Leer el diccionario de formatos
+    #Leemos el diccionario de formatos para mapearlos con el fichero
     with open('diccionarios/formatos.json', 'r', encoding='utf-8') as f:
         dict_formats = json.load(f)
+         # Ordenar términos por longitud descendente para evitar coincidencias parciales
+        terminos = list(dict_formats.keys())
+        terminos.sort(key=len, reverse=True)
+
+    #Para los formatos que incluyen variación de color o edición, dejamos el formato solo como LP y añadimos la variación al Título
+    patronFormato = r'^(' + '|'.join(re.escape(term) for term in terminos) + r')\s+(.+)'
+    data[['FormatoIzq', 'VariaciónDer']] = data['Formato'].str.extract(patronFormato, expand=True)
+    conjuntoConVariacion = data['VariaciónDer'].notna()
+    data.loc[conjuntoConVariacion, 'Título'] = data.loc[conjuntoConVariacion, 'Título'].astype(str) + ' (EDICIÓN VINILO ' + data.loc[conjuntoConVariacion, 'VariaciónDer'] + ')'
+    data.loc[conjuntoConVariacion, 'Formato'] = data['FormatoIzq']
+
+    # Obtener los valores que no tienen equivalencia en el diccionario para la columna 'A'
+    formatos_sin_equivalencia = data['Formato'].loc[~data['Formato'].isin(dict_formats.keys())]
     
-    # Mapear los formatos
-    df_cleaned['Formato'] = df_cleaned['Formato'].map(dict_formats)
+    #Creamos un dataframe aparte con las filas excluidas por no encontrar un formato mapeado
+    data_sin_formato = data.loc[data['Formato'].isin(formatos_sin_equivalencia)]
+    
+    #Mapeamos formatos del diccionario
+    data['Formato'] = data['Formato'].map(dict_formats)
 
-    # Eliminar filas sin formato mapeado
-    df_cleaned = df_cleaned.dropna(subset=['Formato'])
+    #Quitamos del excel de salida las filas sin formato mapeados
+    data = data.dropna(subset=['Formato'])
 
-    # Obtener filas excluidas por no encontrar un formato mapeado
-    data_sin_formato = df_cleaned[~df_cleaned['Formato'].isin(dict_formats.values())]
+    #Ordenamos columnas
+    columnas_ordenadas = ['Autor', 'Título', 'Sello', 'Fecha Lanzamiento', 'Referencia Proveedor', 'Código de Barras', 'Formato', 'Estilo','Comentarios','Precio Compra']
+    data = data[columnas_ordenadas]
 
-    return df_cleaned, data_sin_formato
+    return data, data_sin_formato

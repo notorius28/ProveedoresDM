@@ -15,17 +15,20 @@ def procesarExcel(data):
     #Eliminamos espacios dobles
     data = data.applymap(fg.eliminar_dobles_espacios)
 
-        #Creamos columnas vacías para Estilo y Comentarios
+    #Creamos columnas vacías para Estilo y Comentarios
     data['Estilo'] = pd.Series(dtype=str)
     data['Comentarios'] = pd.Series(dtype=str)
 
-    #Para el Autora, ponemos el artículo THE al final precedido de una coma
+    #Para el Autor, ponemos el artículo THE al final precedido de una coma
     data['Autor'] = data['Autor'].apply(fg.mover_the_al_final)
     #Aplicamos canonización de datos a términos como Varios Artistas o BSO
     data = fg.mapear_autor(data, 'Autor')
 
     #Convertimos la fecha de lanzamiento a formato dd/mm/YYYY
     data['Fecha Lanzamiento'] = data['Fecha Lanzamiento'].dt.strftime('%d-%m-%Y')
+
+    #Ponemos todos los textos en mayúsculas
+    data = data.applymap(lambda x: x.upper() if isinstance(x, str) else x)
 
     #Leemos el diccionario de formatos para mapearlos con el fichero
     with open('diccionarios/formatos.json', 'r', encoding='utf-8') as f:
@@ -43,11 +46,12 @@ def procesarExcel(data):
 
     # Obtener los valores que no tienen equivalencia en el diccionario para la columna 'A'
     formatos_sin_equivalencia = data['Formato'].loc[~data['Formato'].isin(dict_formats.keys())]
-    print(formatos_sin_equivalencia)
-    data['Formato'] = data['Formato'].map(dict_formats)
-
+    
     #Creamos un dataframe aparte con las filas excluidas por no encontrar un formato mapeado
     data_sin_formato = data.loc[data['Formato'].isin(formatos_sin_equivalencia)]
+    
+    #Mapeamos formatos del diccionario
+    data['Formato'] = data['Formato'].map(dict_formats)
 
     #Quitamos del excel de salida las filas sin formato mapeados
     data = data.dropna(subset=['Formato'])
@@ -55,8 +59,5 @@ def procesarExcel(data):
     #Ordenamos columnas
     columnas_ordenadas = ['Autor', 'Título', 'Sello', 'Fecha Lanzamiento', 'Referencia Proveedor', 'Código de Barras', 'Formato', 'Estilo','Comentarios','Precio Compra']
     data = data[columnas_ordenadas]
-
-    #Ponemos todos los textos en mayúsculas
-    data = data.applymap(lambda x: x.upper() if isinstance(x, str) else x)
 
     return(data, data_sin_formato)

@@ -2,6 +2,7 @@ import pandas as pd
 import procesadores.funcionesGenericas as fg
 import json
 from datetime import datetime, timedelta
+import re
 
 def procesarExcel(data):
 
@@ -44,17 +45,30 @@ def procesarExcel(data):
     #Renombramos las columnas
     data.rename(columns={"Artist":"Autor","Title":"Título","Local Marketing Company":"Sello","Release date":"Fecha Lanzamiento", "Product Reference Number":"Referencia Proveedor", "Conf.":"Formato", "Unit PPD":"Precio Compra"}, inplace=True)
     
+    #Ponemos todos los textos en mayúsculas
+    data = data.applymap(lambda x: x.upper() if isinstance(x, str) else x)
+
     #Leemos el diccionario de formatos para mapearlos con el fichero
     with open('diccionarios/formatos.json', 'r', encoding='utf-8') as f:
         dict_formats = json.load(f)
-    
+         # Ordenar términos por longitud descendente para evitar coincidencias parciales
+        terminos = list(dict_formats.keys())
+        terminos.sort(key=len, reverse=True)
+
+    #Para los formatos que incluyen variación de color o edición, dejamos el formato solo como LP y añadimos la variación al Título
+    patronFormato = r'^(' + '|'.join(re.escape(term) for term in terminos) + r')\s+(.+)'
+    data[['FormatoIzq', 'VariaciónDer']] = data['Formato'].str.extract(patronFormato, expand=True)
+    conjuntoConVariacion = data['VariaciónDer'].notna()
+    data.loc[conjuntoConVariacion, 'Título'] = data.loc[conjuntoConVariacion, 'Título'].astype(str) + ' (EDICIÓN VINILO ' + data.loc[conjuntoConVariacion, 'VariaciónDer'] + ')'
+    data.loc[conjuntoConVariacion, 'Formato'] = data['FormatoIzq']
+
     # Obtener los valores que no tienen equivalencia en el diccionario para la columna 'A'
     formatos_sin_equivalencia = data['Formato'].loc[~data['Formato'].isin(dict_formats.keys())]
-    print(formatos_sin_equivalencia)
-
+    
     #Creamos un dataframe aparte con las filas excluidas por no encontrar un formato mapeado
     data_sin_formato = data.loc[data['Formato'].isin(formatos_sin_equivalencia)]
-
+    
+    #Mapeamos formatos del diccionario
     data['Formato'] = data['Formato'].map(dict_formats)
 
     #Quitamos del excel de salida las filas sin formato mapeados
@@ -63,8 +77,5 @@ def procesarExcel(data):
     #Ordenamos columnas
     columnas_ordenadas = ['Autor', 'Título', 'Sello', 'Fecha Lanzamiento', 'Referencia Proveedor', 'Código de Barras', 'Formato', 'Estilo','Comentarios','Precio Compra']
     data = data[columnas_ordenadas]
-
-    #Ponemos todos los textos en mayúsculas
-    data = data.applymap(lambda x: x.upper() if isinstance(x, str) else x)
 
     return data, data_sin_formato
