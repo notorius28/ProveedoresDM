@@ -34,9 +34,14 @@ def procesarExcel(data):
     # Renombramos las coumnas
     data.columns = ['Autor', 'Título', 'Referencia Proveedor', 'Código de Barras','Formato', 'Precio Compra',  'Estilo Proveedor', 'Sello']
 
-    #Forzamos que la referencia y código de barras sean un campo texto
+    #Forzamos que la referencia sea un campo texto
     data['Referencia Proveedor'] = data['Referencia Proveedor'].astype(str)
-    data['Código de Barras'] = data['Código de Barras'].astype(str)
+
+    #Forzamos a texto el código de barras, rellenando con ceros hasta 13 caracteres
+    data['Código de Barras'] = data['Código de Barras'].astype(str).str.zfill(13)
+
+    # Filtramos las filas donde 'Código de Barras' no es un número
+    data = data[data['Código de Barras'].astype(str).apply(str.isdigit)]
 
     #Eliminamos espacios dobles
     data = data.applymap(fg.eliminar_dobles_espacios)

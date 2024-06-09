@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.9] 2024/06/09
+
+## Novedades
+
+- En los códigos de barras, se rellena con ceros a la izquierda hasta los 13 caracteres. Esta transformación solo aplica a los procesados en los que los ficheros contienen un código de barras y no se copia el valor de la Referencia.
+
+### Correcciones
+
+- En el procesador del prov 23, no se mostraban datos si el fichero contenía varías filas con los encabezados
+
 ## [1.0.8] 2024/06/06
 
 ## Novedades
