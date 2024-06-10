@@ -1,72 +1,32 @@
 import pandas as pd
 import procesadores.funcionesGenericas as fg
 import json
-import streamlit as st
 import re
+from datetime import datetime 
 
-def procesarExcel(data, nombre_hoja = None):
+def procesarExcel(data):
 
-    # Utilizamos una variable para controlar si el excel es multipestaña o no
-    if nombre_hoja:
-        multitab = True
-    else:
-        multitab = False
+    # Renombramos las coumnas
+    data.columns = ['Referencia Proveedor','Autor', 'Título',  'Formato', 'Código de Barras', 'Precio Compra', 'Stock', 'Sello']
 
-    # Obtener la fecha de lanzamiento desde el texto en la primera fila
-    if multitab:
-        release_date = fg.obtener_fecha_desde_texto(nombre_hoja)
-    else: 
-        release_date = fg.obtener_fecha_desde_texto(data.columns[0])
-
-    # Encontrar la fila que contiene 'REFERENCIA' o está completamente llena
-    referencia_row = data.apply(lambda row: row.notnull().all() or row.iloc[0] == 'REFERENCIA', axis=1).idxmax()
-
-    # Eliminar filas anteriores a la fila de referencia
-    data = data.iloc[referencia_row:].reset_index(drop=True)
-
-    # Si la primera fila es 'REFERENCIA', usarla como encabezados
-    if data.iloc[0, 0] == 'REFERENCIA':
-        data.columns = data.iloc[0]
-        data = data[1:].reset_index(drop=True)
-
-    # Eliminar filas completamente vacías
-    data = data.dropna(how='all')
-
-    # Renombramos las columnas
-    data.columns = ['Referencia Proveedor', 'GP', 'Precio Compra', 'Formato', 'Autor', 'Título', 'Sello']
-
-    # Forzamos que la referencia sea un campo de texto
+    # Forzamos que la referencia sea un campo texto
     data['Referencia Proveedor'] = data['Referencia Proveedor'].astype(str)
 
-    # Filtramos filas donde 'REFERENCIA' no es un número
-    data = data[data['Referencia Proveedor'].astype(str).apply(str.isdigit)]
+    # Forzamos a texto el código de barras, rellenando con ceros hasta 13 caracteres
+    data['Código de Barras'] = data['Código de Barras'].astype(str).str.zfill(13)
 
-    # Usar la referencia para crear y copiar datos a 'Código de Barras'
-    data['Código de Barras'] = data['Referencia Proveedor']
-
-    #Eliminamos espacios dobles
+    # Eliminamos espacios dobles
     data = data.applymap(fg.eliminar_dobles_espacios)
 
-    # Creamos columnas vacías para Estilo y Comentarios
+    # Creamos columnas vacías para Estilo, Comentarios y Fecha de Lanzamiento
     data['Estilo'] = pd.Series(dtype=str)
     data['Comentarios'] = pd.Series(dtype=str)
+    data['Fecha Lanzamiento'] = pd.Series(dtype=str)
 
     # Para el Autor, ponemos el artículo THE al final precedido de una coma
     data['Autor'] = data['Autor'].apply(fg.mover_the_al_final)
-
     # Aplicamos canonización de datos a términos como Varios Artistas o BSO
     data = fg.mapear_autor(data, 'Autor')
-
-    # Convertir release_date a datetime si no lo es ya
-    if not isinstance(release_date, pd.Timestamp):
-        release_date = pd.to_datetime(release_date)
-
-    # Rellenar todas las fechas de lanzamiento con la fecha obtenida
-    data['Fecha Lanzamiento'] = release_date.strftime('%d-%m-%Y')
-
-    #Si no es multipestaña, rellenamos el sello con el valor "UNIVERSAL"
-    if multitab == False:
-        data['Sello'] = 'UNIVERSAL'
 
     # Ponemos todos los textos en mayúsculas
     data = data.applymap(lambda x: x.upper() if isinstance(x, str) else x)
@@ -85,6 +45,9 @@ def procesarExcel(data, nombre_hoja = None):
     data.loc[conjuntoConVariacion, 'Título'] = data.loc[conjuntoConVariacion, 'Título'].astype(str) + ' (EDICIÓN VINILO ' + data.loc[conjuntoConVariacion, 'VariaciónDer'] + ')'
     data.loc[conjuntoConVariacion, 'Formato'] = data['FormatoIzq']
 
+    # Si el formato es CDL, añadimos al título la descripción CD+LIBRO
+    data.loc[data['Formato'] == 'CDL', 'Título'] += " (CD+LIBRO)"
+
     # Obtener los valores que no tienen equivalencia en el diccionario para la columna 'A'
     formatos_sin_equivalencia = data['Formato'].loc[~data['Formato'].isin(dict_formats.keys())]
     
@@ -93,7 +56,7 @@ def procesarExcel(data, nombre_hoja = None):
     
     # Mapeamos formatos del diccionario
     data['Formato'] = data['Formato'].map(dict_formats)
-
+    
     # Quitamos del excel de salida las filas sin formato mapeados
     data = data.dropna(subset=['Formato'])
 
@@ -101,4 +64,4 @@ def procesarExcel(data, nombre_hoja = None):
     columnas_ordenadas = ['Autor', 'Título', 'Sello', 'Fecha Lanzamiento', 'Referencia Proveedor', 'Código de Barras', 'Formato', 'Estilo','Comentarios','Precio Compra']
     data = data[columnas_ordenadas]
 
-    return data, data_sin_formato
+    return(data, data_sin_formato)
