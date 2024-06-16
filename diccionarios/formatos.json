@@ -38,6 +38,7 @@
     "9LP": "9LP",
     "BLACK LP": "LP",
     "Casete": "Casete",
+    "CASSETTE": "Casete",
     "CD": "CD",
     "CD Mixed product": "LP+CD",
     "CD+DVD DELUXE": "CD+DVD",
@@ -58,5 +59,6 @@
     "MC": "CASSETE",
     "MS": "12\"",
     "SINGLE VINYL": "7\"",
-    "VINILO": "LP"
+    "VINILO": "LP",
+    "VINYL": "LP"
 }

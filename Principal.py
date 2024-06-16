@@ -6,6 +6,8 @@ import importlib.util
 from datetime import datetime, timedelta
 import procesadores.funcionesGenericas as fg
 import pandas_xlwt
+import openpyxl
+import tempfile
 
 # Inicializar el estado si no está presente
 if 'archivo_exportado' not in st.session_state:
@@ -34,13 +36,38 @@ def cargar_archivo(uploaded_file):
         return df
     return None
 
-#Función para obtener el número de pestañas del fichero excel 
+# Función para obtener el número de pestañas del fichero excel 
 def obtener_numero_de_tabs(file):
     xls = pd.ExcelFile(file)
     num_hojas = len(xls.sheet_names)
     return num_hojas
 
-#Función para procesar ficheros excel con múltiples pestañas
+# Función para eliminar pestañas del excel
+
+def eliminar_tabs_excel (file, days):
+    # Cargar el libro de trabajo
+    xls = openpyxl.load_workbook(file)
+    hojas = xls.sheetnames
+
+    # Obtener la fecha actual
+    hoy = datetime.today()
+    # Calcular la fecha correspondiente a 30 días antes
+    hace_un_mes = hoy - timedelta(days=days)
+
+    for hoja in hojas:
+        fecha_tab = datetime.strptime(fg.obtener_fecha_desde_texto(hoja),'%Y-%m-%d') 
+        if fecha_tab and fecha_tab < hace_un_mes:
+            del xls[hoja]
+    
+    # Crear un archivo temporal
+    with tempfile.NamedTemporaryFile(delete=False, suffix='.xlsx') as tmp:
+        ruta_excel_temporal = tmp.name
+        # Guardar el archivo modificado en el archivo temporal
+        xls.save(ruta_excel_temporal)
+
+    return ruta_excel_temporal
+
+# Función para procesar ficheros excel con múltiples pestañas
 def procesar_excel_multiples_tabs(file):
     xls = pd.ExcelFile(file)
     hojas = xls.sheet_names
@@ -58,20 +85,11 @@ def procesar_excel_multiples_tabs(file):
     progress_text = str(progreso) + "/" + str(num_hojas) +  " pestañas procesadas"
     progress_bar = st.progress(0, text=progress_text)
 
-    # Obtener la fecha actual
-    hoy = datetime.today()
-    # Calcular la fecha correspondiente a 30 días antes
-    hace_un_mes = hoy - timedelta(days=30)
-
     for hoja in hojas:
-        #Solo procesamos las pestañas correspondientes a fechas de los últimos 30 días
-        fecha_tab = datetime.strptime(fg.obtener_fecha_desde_texto(hoja),'%Y-%m-%d') 
-        print (fecha_tab)
-        if fecha_tab >= hace_un_mes:
-            df_hoja = pd.read_excel(file, sheet_name=hoja)
-            df_procesado, df_procesado_sin_formato = procesador_module.procesarExcel(df_hoja, hoja)
-            df_procesado_total = pd.concat([df_procesado_total, df_procesado], ignore_index=True)
-            df_procesado_sin_formato_total = pd.concat([df_procesado_sin_formato_total, df_procesado_sin_formato], ignore_index=True)
+        df_hoja = pd.read_excel(file, sheet_name=hoja)
+        df_procesado, df_procesado_sin_formato = procesador_module.procesarExcel(df_hoja, hoja)
+        df_procesado_total = pd.concat([df_procesado_total, df_procesado], ignore_index=True)
+        df_procesado_sin_formato_total = pd.concat([df_procesado_sin_formato_total, df_procesado_sin_formato], ignore_index=True)
 
         # Actualizar la barra de progreso
         progreso += 1
@@ -153,8 +171,13 @@ if uploaded_file:
         # Botón para procesar el DataFrame
         if st.button("Procesar Fichero"):
             try:
+                st.write("Eliminando las pestañas del excel con antigüedad superior a 30 días (es un proceso lento)...")
+                # Primero limpiamos las pestañas antiguas
+                ruta_excel_limpio = eliminar_tabs_excel(uploaded_file, 30)
+                del uploaded_file
+
                 st.write("Procesando fichero con múltiples pestañas...")
-                df_procesado, df_procesado_sin_formato =procesar_excel_multiples_tabs(uploaded_file)
+                df_procesado, df_procesado_sin_formato =procesar_excel_multiples_tabs(ruta_excel_limpio)
                 st.write("Fichero procesado:")
                 st.dataframe(df_procesado)
 
@@ -170,7 +193,7 @@ if uploaded_file:
                 st.error(f"¡Error al procesar el fichero: {str(e)}")
                 st.error(traceback.format_exc())
 
-                    # Mostrar el botón de descarga si el archivo ha sido exportado
+        # Mostrar el botón de descarga si el archivo ha sido exportado
         if st.session_state['archivo_exportado']:
             st.markdown("### Pulsa este botón para descargar el archivo procesado y exportado")
             with open("archivo_procesado.xls", "rb") as file:
