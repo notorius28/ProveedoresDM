@@ -5,7 +5,8 @@ import traceback
 import importlib.util
 from datetime import datetime, timedelta
 import procesadores.funcionesGenericas as fg
-import pandas_xlwt #para exportar en xls
+import pandas_xlwt 
+from io import BytesIO
 
 
 #Inicializamos variables de sesión
@@ -62,7 +63,8 @@ def cachear_fichero(file):
 @st.cache_data(show_spinner="Leyendo archivo Excel...")
 def leer_excel(uploaded_file):
     if uploaded_file is not None:
-        df = pd.read_excel(uploaded_file, sheet_name=None)
+        file_bytes = BytesIO(uploaded_file.read())
+        df = pd.read_excel(file_bytes, sheet_name=None)
         return df
     return None
 
