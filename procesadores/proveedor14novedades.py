@@ -3,7 +3,7 @@ import procesadores.funcionesGenericas as fg
 import json
 import re
 
-def procesarExcel(data):
+def procesarExcel(data, nombre_hoja=None):
 
     # Renombramos las coumnas
     data.columns = ['Autor', 'Título', 'Referencia Proveedor', 'Formato', 'G.T', 'Precio Compra', 'Código de Barras', 'Sello', 'Fecha Lanzamiento']

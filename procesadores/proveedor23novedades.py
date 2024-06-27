@@ -4,7 +4,7 @@ import json
 import streamlit as st
 import re
 
-def procesarExcel(data):
+def procesarExcel(data, nombre_hoja=None):
     # Comprobar si, en la celda B3, viene un texto con una fecha para usarla luego como Fecha de Lanzamiento
     release_date = fg.extraer_fecha(data.iat[1,1])
 
@@ -56,6 +56,9 @@ def procesarExcel(data):
 
     # Asignamos la fecha de lanzamiento global del fichero
     data['Fecha Lanzamiento'] = release_date
+
+    # Forzamos el precio de compra a tipo float, para que podamos multiplicar su valor después
+    data['Precio Compra'] = data['Precio Compra'].astype(float)
 
     # Aplicamos un 0,30 al precio 
     data['Precio Compra'] = data['Precio Compra'] * 0.3

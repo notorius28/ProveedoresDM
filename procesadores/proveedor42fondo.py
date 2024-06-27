@@ -4,9 +4,9 @@ import json
 from datetime import datetime, timedelta
 import re
 
-def procesarExcel(data):
+def procesarExcel(data, nombre_hoja=None):
 
-    # Renombramos las coumnas
+    # Renombramos las columnas
     data.columns = ['Código de Barras', 'Autor', 'Título', 'Sello', 'Formato', 'Component units', 'Fecha Lanzamiento', 'Price code', 'Precio Compra', 'Currency', 'Av. Stock']
     
     # Filtramos en este procesador para retornar lanzamientos de los últimos 30 días
