@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.10] 2024/06/27
+
+## Correcciones
+
+- Refactorización de codigo orientada a un tratamiento más eficiente de los ficheros multipestaña
+- Se muestra una advertencia para los ficheros multipestaña, independientemente del procesador
+
+## Otros
+
+- Añadido dockerfile
+
 ## [1.0.9] 2024/06/09
 
 ## Novedades
