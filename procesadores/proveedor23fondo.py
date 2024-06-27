@@ -4,7 +4,7 @@ import json
 import re
 from datetime import datetime 
 
-def procesarExcel(data):
+def procesarExcel(data, nombre_hoja = None):
 
     # Renombramos las coumnas
     data.columns = ['Referencia Proveedor','Autor', 'Título',  'Formato', 'Código de Barras', 'Precio Compra', 'Stock', 'Sello']
