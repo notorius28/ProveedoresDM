@@ -167,7 +167,7 @@ if st.session_state.excel_dict:
         st.write("Fichero procesado:")
         st.dataframe(st.session_state.df_procesado_total)
 
-        st.write("Filas sin formato equivalente:")
+        st.write("Registros no exportables:")
         st.dataframe(st.session_state.df_procesado_sin_formato_total)
 
         num_filas = st.session_state.df_procesado_total.shape[0]
