@@ -103,3 +103,9 @@ def extraer_edicion_del_formato(data, dict_formats):
     data.loc[conjuntoConVariacion, 'Formato'] = data['FormatoIzq']
 
     return data
+
+def dataframe_en_mayusculas_excepto_una_columna (df, exclude_column):
+    for column in df.columns:
+        if column != exclude_column:
+            df[column] = df[column].apply(lambda x: x.upper() if isinstance(x, str) else x)
+    return df

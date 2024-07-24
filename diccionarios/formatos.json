@@ -44,17 +44,18 @@
     "CD": "CD",
     "CD COMPACT DISC": "CD",
     "CD Mixed product": "LP+CD",
+    "CD+ MERCHAN": "CD",
     "CD+DVD DELUXE": "CD+DVD",
     "CD-A": "CD",
     "CDL": "CD",
     "CDS": "CDsingle",
-    "CD+ MERCHAN": "CD",
+    "DIGIPACK CD": "CD",
     "LIBRO": "LIBRO",
     "LIBRO+CD": "LIBRO+CD",
     "LIBRO+LP": "LIBRO+LP",
     "LP": "LP",
-    "LP VINYL": "LP",
     "LP VINILO": "LP",
+    "LP VINYL": "LP",
     "LP+7\"": "LP+7\"",
     "LP+CD": "LP+CD",
     "LP+CD+DVD": "LP+CD+DVD",
@@ -65,5 +66,6 @@
     "MS": "12\"",
     "SINGLE VINYL": "7\"",
     "VINILO": "LP",
-    "VINYL": "LP"
+    "VINYL": "LP",
+    "BOX 10CD": "10CD"
 }

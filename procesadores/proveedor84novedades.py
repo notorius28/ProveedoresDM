@@ -2,23 +2,44 @@ import pandas as pd
 import procesadores.funcionesGenericas as fg
 import json
 import re
+import numpy as np
 
 def procesarExcel(data, nombre_hoja = None):
 
+    # Iterar sobre las filas para encontrar la primera que cumpla una de las condiciones: o tiene todos los datos rellenos o la primera columna se llama REFERENCIA
+    for idx in data.index:
+        row = data.iloc[idx]
+        if row.notnull().all() or row.iloc[0] == 'REFERENCIA':
+            referencia_row = idx
+            break
+    else:
+        referencia_row = None  # Si no se encuentra una fila que cumpla con las condiciones
+
+    # Eliminar todas las filas anteriores a la fila que contiene "REFERENCIA"
+    df_cleaned = data.iloc[referencia_row:].reset_index(drop=True)
+
+    if row.iloc[0] == 'REFERENCIA': 
+        # Asignar la primera fila como los nuevos encabezados
+        df_cleaned.columns = df_cleaned.iloc[0]
+        df_cleaned = df_cleaned[1:].reset_index(drop=True)
+
+    # Eliminar filas que están completamente vacías
+    df_cleaned = df_cleaned.dropna(how='all')
+    data = df_cleaned
+
     # Renombramos las coumnas
-    data.columns = ['Referencia Proveedor', 'Autor', 'Título', 'Comentarios', 'Serie', 'Código de Barras', 'Tipo Música', 'Fecha Lanzamiento', 'Precio Compra', 'Sello', 'Formato']
+    data.columns = ['Referencia Proveedor', 'Autor', 'Título', 'Formato', 'Código de Barras', 'Precio Compra', 'Serie', 'Comentarios', 'Portada',  'Observaciones']
 
     # Forzamos que la referencia sea un campo texto
     data['Referencia Proveedor'] = data['Referencia Proveedor'].astype(str)
 
-    # Forzamos a texto el código de barras, rellenando con ceros hasta 13 caracteres
-    data['Código de Barras'] = data['Código de Barras'].astype(str).str.zfill(13)
-
     # Eliminamos espacios dobles
     data = data.applymap(fg.eliminar_dobles_espacios)
 
-    # Creamos columnas vacías para Estilo
+    # Creamos columnas vacías para Estilo, Sello y Fecha Lanzamiento
     data['Estilo'] = pd.Series(dtype=str)
+    data['Sello'] = pd.Series(dtype=str)
+    data['Fecha Lanzamiento'] = pd.Series(dtype=str)
 
     # Para el Autor, ponemos el artículo THE al final precedido de una coma
     data['Autor'] = data['Autor'].apply(fg.mover_the_al_final)
@@ -26,14 +47,8 @@ def procesarExcel(data, nombre_hoja = None):
     # Aplicamos canonización de datos a términos como Varios Artistas o BSO
     data = fg.mapear_autor(data, 'Autor')
 
-    # Convertimos la fecha de lanzamiento a formato dd/mm/YYYY
-    data['Fecha Lanzamiento'] = data['Fecha Lanzamiento'].dt.strftime('%d-%m-%Y')
-
     # Ponemos todos los textos en mayúsculas, excepto Comentarios
     data = fg.dataframe_en_mayusculas_excepto_una_columna (data, 'Comentarios')
-
-    # Para los formatos, eliminamos el espacio en blanco entre la cantidad y el soporte
-    data['Formato'] = data['Formato'].str.split().agg("".join)
 
     # Leemos el diccionario de formatos para mapearlos con el fichero
     with open('diccionarios/formatos.json', 'r', encoding='utf-8') as f:
@@ -42,7 +57,7 @@ def procesarExcel(data, nombre_hoja = None):
         terminos = list(dict_formats.keys())
         terminos.sort(key=len, reverse=True)
 
-    # Para los formatos que incluyen variación de color o edición, dejamos el formato solo como LP y añadimos la variación al Título
+   # Para los formatos que incluyen variación de color o edición, dejamos el formato solo como LP y añadimos la variación al Título
     patronFormato = r'^(' + '|'.join(re.escape(term) for term in terminos) + r')\s+(.+)'
     data[['FormatoIzq', 'VariaciónDer']] = data['Formato'].str.extract(patronFormato, expand=True)
     conjuntoConVariacion = data['VariaciónDer'].notna()
@@ -62,7 +77,7 @@ def procesarExcel(data, nombre_hoja = None):
     data = data.dropna(subset=['Formato'])
 
     # Ordenamos columnas
-    columnas_ordenadas = ['Autor', 'Título', 'Sello', 'Fecha Lanzamiento', 'Referencia Proveedor', 'Código de Barras', 'Formato', 'Estilo','Comentarios','Precio Compra']
+    columnas_ordenadas = ['Autor', 'Título', 'Sello', 'Fecha Lanzamiento', 'Referencia Proveedor', 'Código de Barras', 'Formato', 'Estilo', 'Comentarios', 'Precio Compra']
     data = data[columnas_ordenadas]
 
     return(data, data_sin_formato)
