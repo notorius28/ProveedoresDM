@@ -39,6 +39,15 @@
     "9CD": "9CD",
     "9LP": "9LP",
     "BLACK LP": "LP",
+    "BOX 10CD": "10CD",
+    "BOX 2CD": "2CD",
+    "BOX 3CD": "3CD",
+    "BOX 4CD": "4CD",
+    "BOX 5CD": "5CD",
+    "BOX 6CD": "6CD",
+    "BOX 7CD": "7CD",
+    "BOX 8CD": "8CD",
+    "BOX 9CD": "9CD",
     "Casete": "Casete",
     "CASSETTE": "Casete",
     "CD": "CD",
@@ -66,6 +75,5 @@
     "MS": "12\"",
     "SINGLE VINYL": "7\"",
     "VINILO": "LP",
-    "VINYL": "LP",
-    "BOX 10CD": "10CD"
+    "VINYL": "LP"
 }

@@ -145,18 +145,22 @@ if st.session_state.excel_dict:
                 progress_bar.progress(progreso / numero_tabs, text=progress_text)
 
                 if progreso == numero_tabs:
-                    # Convertimos la fecha de lanzamiento a formato fecha para la exportación, indicando que el día va al principio
-                    st.session_state.df_procesado_total['Fecha Lanzamiento'] = pd.to_datetime(st.session_state.df_procesado_total['Fecha Lanzamiento'], dayfirst=True)
-                    st.session_state.df_procesado_sin_formato_total['Fecha Lanzamiento'] = pd.to_datetime(st.session_state.df_procesado_sin_formato_total['Fecha Lanzamiento'], dayfirst=True)
 
-                    # Convertimos la fecha de lanzamiento a formato dd/mm/YYYY
-                    st.session_state.df_procesado_total['Fecha Lanzamiento'] = st.session_state.df_procesado_total['Fecha Lanzamiento'].dt.strftime('%d-%m-%Y')
-                    st.session_state.df_procesado_sin_formato_total['Fecha Lanzamiento'] = st.session_state.df_procesado_sin_formato_total['Fecha Lanzamiento'].dt.strftime('%d-%m-%Y')
+                    if st.session_state.df_procesado_total.empty:
+                        st.warning("No se ha podido generar un fichero de salida porque no hay registros con fecha de lanzamiento reciente.")
+                    else:
+                        # Convertimos la fecha de lanzamiento a formato fecha para la exportación, indicando que el día va al principio
+                        st.session_state.df_procesado_total['Fecha Lanzamiento'] = pd.to_datetime(st.session_state.df_procesado_total['Fecha Lanzamiento'], dayfirst=True)
+                        st.session_state.df_procesado_sin_formato_total['Fecha Lanzamiento'] = pd.to_datetime(st.session_state.df_procesado_sin_formato_total['Fecha Lanzamiento'], dayfirst=True)
 
-                    # Exportamos el fichero en formato excel 97/2000 (XLS)
-                    st.session_state.df_procesado_total.to_excel('archivo_procesado.xls',engine='xlwt',index=False)
-                    st.session_state.exported_file = True
-                    st.session_state.process_ok = True
+                        # Convertimos la fecha de lanzamiento a formato dd/mm/YYYY
+                        st.session_state.df_procesado_total['Fecha Lanzamiento'] = st.session_state.df_procesado_total['Fecha Lanzamiento'].dt.strftime('%d-%m-%Y')
+                        st.session_state.df_procesado_sin_formato_total['Fecha Lanzamiento'] = st.session_state.df_procesado_sin_formato_total['Fecha Lanzamiento'].dt.strftime('%d-%m-%Y')
+
+                        # Exportamos el fichero en formato excel 97/2000 (XLS)
+                        st.session_state.df_procesado_total.to_excel('archivo_procesado.xls',engine='xlwt',index=False)
+                        st.session_state.exported_file = True
+                        st.session_state.process_ok = True
 
             except Exception as e:
                 st.error(f"¡Error al procesar el fichero: {str(e)}")

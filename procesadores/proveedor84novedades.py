@@ -6,12 +6,18 @@ import numpy as np
 
 def procesarExcel(data, nombre_hoja = None):
 
+    # Obtener la fecha de lanzamiento desde el texto en la primera fila
+    release_date = fg.obtener_fecha_desde_texto(data.columns[0])
+
     # Iterar sobre las filas para encontrar la primera que cumpla una de las condiciones: o tiene todos los datos rellenos o la primera columna se llama REFERENCIA
     for idx in data.index:
         row = data.iloc[idx]
-        if row.notnull().all() or row.iloc[0] == 'REFERENCIA':
-            referencia_row = idx
-            break
+        if pd.isna(row.iloc[0]):
+            print ("El fichero contiene líneas vacías")
+        else: 
+            if row.notnull().all() or row.iloc[0] == 'REFERENCIA':
+                referencia_row = idx
+                break
     else:
         referencia_row = None  # Si no se encuentra una fila que cumpla con las condiciones
 
@@ -39,13 +45,19 @@ def procesarExcel(data, nombre_hoja = None):
     # Creamos columnas vacías para Estilo, Sello y Fecha Lanzamiento
     data['Estilo'] = pd.Series(dtype=str)
     data['Sello'] = pd.Series(dtype=str)
-    data['Fecha Lanzamiento'] = pd.Series(dtype=str)
 
     # Para el Autor, ponemos el artículo THE al final precedido de una coma
     data['Autor'] = data['Autor'].apply(fg.mover_the_al_final)
 
     # Aplicamos canonización de datos a términos como Varios Artistas o BSO
     data = fg.mapear_autor(data, 'Autor')
+
+    # Convertir release_date a datetime si no lo es ya
+    if not isinstance(release_date, pd.Timestamp):
+        release_date = pd.to_datetime(release_date)
+
+    # Rellenar todas las fechas de lanzamiento con la fecha obtenida
+    data['Fecha Lanzamiento'] = release_date.strftime('%d-%m-%Y')
 
     # Ponemos todos los textos en mayúsculas, excepto Comentarios
     data = fg.dataframe_en_mayusculas_excepto_una_columna (data, 'Comentarios')

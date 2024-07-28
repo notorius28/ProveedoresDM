@@ -9,21 +9,27 @@ def obtener_fecha_desde_texto(text):
     # Definir la expresión regular para extraer la fecha con año de dos o cuatro dígitos, y sin año
     date_pattern_with_year = r'(\d{1,2})\s(\w+)\s(\d{2,4})'
     date_pattern_without_year = r'(\d{1,2})\s(\w+)'
+    date_pattern_with_year_and_article = r'(\d{1,2})\sDE\s(\w+)\sDE\s(\d{4})'
     
     # Intentar encontrar una fecha con año primero
     match = re.search(date_pattern_with_year, text)
     if match:
         day, month, year = match.groups()
     else:
-        # Intentar encontrar una fecha sin año
-        match = re.search(date_pattern_without_year, text)
+        # Sino, intentar encontrar una fecha con año y el artículo DE
+        match = re.search(date_pattern_with_year_and_article, text)
         if match:
-            day, month = match.groups()
-            # Obtener el año actual
-            year = datetime.now().year % 100  # Tomar los dos últimos dígitos del año actual
-            year = f"{year:02d}"
+            day, month, year = match.groups()
         else:
-            return None  # No se encontró una fecha válida
+            # Intentar encontrar una fecha sin año
+            match = re.search(date_pattern_without_year, text)
+            if match:
+                day, month = match.groups()
+                # Obtener el año actual
+                year = datetime.now().year % 100  # Tomar los dos últimos dígitos del año actual
+                year = f"{year:02d}"
+            else:
+                return None  # No se encontró una fecha válida
     
     # Diccionario para convertir meses en español a números
     months = {

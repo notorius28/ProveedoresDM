@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.14] 2024/07/28
+
+## Novedades
+
+- Añadida extracción de la fecha de lanzamiento para cadenas de texto con artículo "de". Por ejemplo, "15 de Junio de 1984". Este formato aplica al "Proveedor 84 Novedades"
+
+## Correcciones
+
+- Corregido "Proveedor 84 Novedades" para evitar que devuelva error cuando hay una fila vacía (N/A)
+- Añadido un control para que no devuelva error en aquellos proveedores que procesan solo los lanzamientos recientes si el fichero excel no contiene ningún lanzamiento que cumpla esa condición.
+
 ## [1.0.13] 2024/07/24
 
 ## Novedades
