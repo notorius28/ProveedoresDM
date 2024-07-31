@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Novedades
 
-- Añadida extracción de la fecha de lanzamiento para cadenas de texto con sólo un artículo "de". Por ejemplo, "24 de Junio 2022". Este formato aplica al "Proveedor 84 Novedades"
+- Añadida extracción de la fecha de lanzamiento para cadenas de texto con sólo un artículo "de". Por ejemplo, "24 de Junio 2022". Este formato aplica al "Proveedor 48 Novedades"
 
 ## [1.0.14] 2024/07/28
 

@@ -8,6 +8,7 @@ def procesarExcel(data, nombre_hoja = None):
 
     # Obtener la fecha de lanzamiento desde el texto en la primera fila
     release_date = fg.obtener_fecha_desde_texto(data.columns[0])
+    print(release_date)
 
     # Iterar sobre las filas para encontrar la primera que cumpla una de las condiciones: o tiene todos los datos rellenos o la primera columna se llama REFERENCIA
     for idx in data.index:
