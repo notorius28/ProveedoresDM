@@ -6,31 +6,14 @@ import re
 from datetime import datetime
 
 def obtener_fecha_desde_texto(text):
-    # Definir la expresión regular para extraer la fecha con año de dos o cuatro dígitos, y sin año
-    date_pattern_with_year = r'(\d{1,2})\s(\w+)\s(\d{2,4})'
-    date_pattern_without_year = r'(\d{1,2})\s(\w+)'
-    date_pattern_with_year_and_article = r'(\d{1,2})\sDE\s(\w+)\sDE\s(\d{4})'
-    
-    # Intentar encontrar una fecha con año primero
-    match = re.search(date_pattern_with_year, text)
-    if match:
-        day, month, year = match.groups()
-    else:
-        # Sino, intentar encontrar una fecha con año y el artículo DE
-        match = re.search(date_pattern_with_year_and_article, text)
-        if match:
-            day, month, year = match.groups()
-        else:
-            # Intentar encontrar una fecha sin año
-            match = re.search(date_pattern_without_year, text)
-            if match:
-                day, month = match.groups()
-                # Obtener el año actual
-                year = datetime.now().year % 100  # Tomar los dos últimos dígitos del año actual
-                year = f"{year:02d}"
-            else:
-                return None  # No se encontró una fecha válida
-    
+    # Lista de patrones
+    patterns = [
+        (r'(\d{1,2})\s(\w+)\s(\d{2,4})', lambda match: match.groups()),
+        (r'(\d{1,2})\sDE\s(\w+)\s(\d{4})', lambda match: match.groups()),
+        (r'(\d{1,2})\sDE\s(\w+)\sDE\s(\d{4})', lambda match: match.groups()),
+        (r'(\d{1,2})\s(\w+)', lambda match: (*match.groups(), f"{datetime.now().year % 100:02d}"))
+    ]
+
     # Diccionario para convertir meses en español a números
     months = {
         'ENERO': '01', 'FEBRERO': '02', 'MARZO': '03', 'ABRIL': '04',
@@ -38,19 +21,24 @@ def obtener_fecha_desde_texto(text):
         'SEPTIEMBRE': '09', 'OCTUBRE': '10', 'NOVIEMBRE': '11', 'DICIEMBRE': '12'
     }
     
-    # Convertir el mes a un número
-    month_num = months.get(month.upper())
-    if month_num:
-        # Convertir el año a un entero y ajustar al siglo XXI si es necesario
-        year = int(year)
-        if year < 100:  # Si el año tiene dos dígitos
-            year += 2000
-        
-        # Formatear la fecha como cadena
-        date_str = f"{year}-{month_num}-{day.zfill(2)}"
-        return date_str
-    return None
+    for pattern, processor in patterns:
+        match = re.search(pattern, text)
+        if match:
+            day, month, year = processor(match)
+            
+            # Convertir el mes a un número
+            month_num = months.get(month.upper())
+            if month_num:
+                # Convertir el año a un entero y ajustar al siglo XXI si es necesario
+                year = int(year)
+                if year < 100:  # Si el año tiene dos dígitos
+                    year += 2000
+                
+                # Formatear la fecha como cadena
+                date_str = f"{year}-{month_num}-{day.zfill(2)}"
+                return date_str
 
+    return None  # No se encontró una fecha válida
 
 def eliminar_dobles_espacios(texto):
     if isinstance(texto, str):
