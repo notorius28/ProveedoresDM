@@ -36,6 +36,9 @@ def procesarExcel(data, nombre_hoja = None):
     # Renombramos las coumnas
     data.columns = ['Referencia Proveedor', 'Autor', 'Título', 'Formato', 'Código de Barras', 'Precio Compra', 'Serie', 'Comentarios', 'Portada',  'Observaciones']
 
+    # Para el precio, reemplazamos el símbolo de decimal de punto a coma
+    data['Precio Compra'] = data['Precio Compra'].astype(str).str.replace('.', ',')
+
     # Forzamos que la referencia sea un campo texto
     data['Referencia Proveedor'] = data['Referencia Proveedor'].astype(str)
 

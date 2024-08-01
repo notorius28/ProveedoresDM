@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.16] 2024/08/01
+
+## Correcciones
+
+- En el "Proveedor 84 Novedades", se fuerza que el decimal en el precio se transforme a coma, ya que no lo interpreta correctamente del fichero excel original y lo lee como punto.
+
 ## [1.0.15] 2024/07/31
 
 ## Novedades
