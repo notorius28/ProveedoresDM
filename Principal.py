@@ -64,7 +64,7 @@ def cachear_fichero(file):
 def leer_excel(uploaded_file):
     if uploaded_file is not None:
         file_bytes = BytesIO(uploaded_file.read())
-        df = pd.read_excel(file_bytes, sheet_name=None)
+        df = pd.read_excel(file_bytes, sheet_name=None, dtype=object)
         return df
     return None
 
