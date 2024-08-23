@@ -107,10 +107,12 @@ if st.session_state.excel_dict:
     for nombre, hoja in st.session_state.excel_dict.items():
         
         if numero_tabs > 1:
+            multitab = True
             # En multipestaña, obtenemos la fecha del nombre de la pestaña y no mostramos datos previso
             fecha_tab = datetime.strptime(fg.obtener_fecha_desde_texto(nombre),'%Y-%m-%d') 
         else:
             # Con una sola pestaña, mostramos la vista previa y el total de registros
+            multitab= False
             fecha_tab = hoy
             st.write("Aquí están los datos del fichero original:")
             st.dataframe(hoja)
@@ -135,7 +137,10 @@ if st.session_state.excel_dict:
             try:
                 # Comprobamos que la pestaña sea de una fecha reciente y procesamos el excel, almacenando los resultados en dos dataframes                             
                 if fecha_tab >= hace_un_mes:
-                    df_procesado, df_procesado_sin_formato = procesador_module.procesarExcel(hoja, nombre)
+                    if multitab:
+                        df_procesado, df_procesado_sin_formato = procesador_module.procesarExcel(hoja, nombre, multitab)
+                    else:
+                        df_procesado, df_procesado_sin_formato = procesador_module.procesarExcel(hoja, nombre)
                     st.session_state.df_procesado_total = pd.concat([st.session_state.df_procesado_total, df_procesado], ignore_index=True)
                     st.session_state.df_procesado_sin_formato_total = pd.concat([st.session_state.df_procesado_sin_formato_total, df_procesado_sin_formato], ignore_index=True)
 
