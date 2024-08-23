@@ -4,13 +4,7 @@ import json
 import streamlit as st
 import re
 
-def procesarExcel(data, nombre_hoja = None):
-
-    # Utilizamos una variable para controlar si el excel es multipestaña o no
-    if nombre_hoja:
-        multitab = True
-    else:
-        multitab = False
+def procesarExcel(data, nombre_hoja = None, multitab = False):
 
     # Obtener la fecha de lanzamiento desde el texto en la primera fila
     if multitab:
@@ -19,7 +13,12 @@ def procesarExcel(data, nombre_hoja = None):
         release_date = fg.obtener_fecha_desde_texto(data.columns[0])
 
     # Encontrar la fila que contiene 'REFERENCIA' o está completamente llena
-    referencia_row = data.apply(lambda row: row.notnull().all() or row.iloc[0] == 'REFERENCIA', axis=1).idxmax()
+    #referencia_row = data.apply(lambda row: row.notnull().all() or row.iloc[0] == 'REFERENCIA', axis=1).idxmax()
+    # Aplica la función y maneja los NaN llenándolos con False antes de aplicar la máscara
+    mask = data.apply(lambda row: row.notnull().all() or row.iloc[0] == 'REFERENCIA', axis=1).fillna(False)
+
+    # Encuentra el índice de la primera fila que cumple con la condición
+    referencia_row = mask[mask].index[0]
 
     # Eliminar filas anteriores a la fila de referencia
     data = data.iloc[referencia_row:].reset_index(drop=True)
@@ -35,14 +34,11 @@ def procesarExcel(data, nombre_hoja = None):
     # Renombramos las columnas
     data.columns = ['Referencia Proveedor', 'GP', 'Precio Compra', 'Formato', 'Autor', 'Título', 'Sello']
 
-    # Forzamos que la referencia sea un campo de texto
+    # Forzamos que la referencia sea un campo texto
     data['Referencia Proveedor'] = data['Referencia Proveedor'].astype(str)
 
-    # Filtramos filas donde 'REFERENCIA' no es un número
-    data = data[data['Referencia Proveedor'].astype(str).apply(str.isdigit)]
-
-    # Usar la referencia para crear y copiar datos a 'Código de Barras'
-    data['Código de Barras'] = data['Referencia Proveedor']
+    # Si el código de barras viene vacío, usamos la referencia del Proveedor
+    data['Código de Barras'] = data['Referencia Proveedor'].astype(str).str.zfill(13)
 
     #Eliminamos espacios dobles
     data = data.applymap(fg.eliminar_dobles_espacios)

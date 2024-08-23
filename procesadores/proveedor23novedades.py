@@ -35,11 +35,14 @@ def procesarExcel(data, nombre_hoja = None):
     # Forzamos que la referencia sea un campo texto
     data['Referencia Proveedor'] = data['Referencia Proveedor'].astype(str)
 
+    # Si el código de barras viene vacío, usamos la referencia del Proveedor
+    data['Código de Barras'] = data['Código de Barras'].fillna(data['Referencia Proveedor'])
+
     # Forzamos a texto el código de barras, rellenando con ceros hasta 13 caracteres
     data['Código de Barras'] = data['Código de Barras'].astype(str).str.zfill(13)
 
     # Filtramos las filas donde 'Código de Barras' no es un número
-    data = data[data['Código de Barras'].astype(str).apply(str.isdigit)]
+    #data = data[data['Código de Barras'].astype(str).apply(str.isdigit)]
 
     # Eliminamos espacios dobles
     data = data.applymap(fg.eliminar_dobles_espacios)

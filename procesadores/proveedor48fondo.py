@@ -12,15 +12,18 @@ def procesarExcel(data, nombre_hoja = None):
     # Forzamos que la referencia sea un campo texto
     data['Referencia Proveedor'] = data['Referencia Proveedor'].astype(str)
 
+    # Si el código de barras viene vacío, usamos la referencia del Proveedor
+    data['Código de Barras'] = data['Código de Barras'].fillna(data['Referencia Proveedor'])
+
+    # Forzamos a texto el código de barras, rellenando con ceros hasta 13 caracteres
+    data['Código de Barras'] = data['Código de Barras'].astype(str).str.zfill(13)
+
     # Eliminamos espacios dobles
     data = data.applymap(fg.eliminar_dobles_espacios)
 
     # Creamos columnas vacías para Estilo, Comentarios y Fecha Lanzamiento
     data['Estilo'] = pd.Series(dtype=str)
     data['Comentarios'] = pd.Series(dtype=str)
-
-    # Forzamos a texto el código de barras, rellenando con ceros hasta 13 caracteres
-    data['Código de Barras'] = data['Código de Barras'].astype(str).str.zfill(13)
 
     # Para el Autor, ponemos el artículo THE al final precedido de una coma
     data['Autor'] = data['Autor'].apply(fg.mover_the_al_final)
