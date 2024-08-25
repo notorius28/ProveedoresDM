@@ -1,7 +1,7 @@
 import pandas as pd
 import procesadores.funcionesGenericas as fg
+import procesadores.funcionesValidacion as fv
 import json
-import streamlit as st
 import re
 
 def procesarExcel(data, nombre_hoja = None):
@@ -29,8 +29,11 @@ def procesarExcel(data, nombre_hoja = None):
     data = data.dropna(how='all')
     data = data.dropna(subset=['TÍTULO'])
 
-    # Renombramos las coumnas
-    data.columns = ['Autor', 'Título', 'Referencia Proveedor', 'Código de Barras','Formato', 'Precio Compra',  'Estilo Proveedor', 'Sello']
+    #Establecemos el diseño de los campos del procesador
+    templateColumns = ['Autor', 'Título', 'Referencia Proveedor', 'Código de Barras','Formato', 'Precio Compra',  'Estilo Proveedor', 'Sello']
+
+    #Comprobamos la estructura
+    fv.comprobarCampos(data, templateColumns)
 
     # Forzamos que la referencia sea un campo texto
     data['Referencia Proveedor'] = data['Referencia Proveedor'].astype(str)

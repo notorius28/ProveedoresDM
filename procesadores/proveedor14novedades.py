@@ -1,12 +1,16 @@
 import pandas as pd
 import procesadores.funcionesGenericas as fg
+import procesadores.funcionesValidacion as fv
 import json
 import re
 
 def procesarExcel(data, nombre_hoja = None):
 
-    # Renombramos las coumnas
-    data.columns = ['Autor', 'Título', 'Referencia Proveedor', 'Formato', 'G.T', 'Precio Compra', 'Código de Barras', 'Sello', 'Fecha Lanzamiento']
+    #Establecemos el diseño de los campos del procesador
+    templateColumns = ['Autor', 'Título', 'Referencia Proveedor', 'Formato', 'G.T', 'Precio Compra', 'Código de Barras', 'Sello', 'Fecha Lanzamiento']
+
+    #Comprobamos la estructura
+    fv.comprobarCampos(data, templateColumns)
 
     # Forzamos que la referencia sea un campo texto
     data['Referencia Proveedor'] = data['Referencia Proveedor'].astype(str)

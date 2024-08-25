@@ -1,5 +1,6 @@
 import pandas as pd
 import procesadores.funcionesGenericas as fg
+import procesadores.funcionesValidacion as fv
 import json
 import re
 import numpy as np
@@ -34,8 +35,11 @@ def procesarExcel(data, nombre_hoja = None):
     df_cleaned = df_cleaned.dropna(how='all')
     data = df_cleaned
 
-    # Renombramos las coumnas
-    data.columns = ['Referencia Proveedor', 'Código de Barras', 'Autor', 'Título', 'Formato', 'Serie', 'Precio Compra', 'Estilo',  'Sello']
+    #Establecemos el diseño de los campos del procesador
+    templateColumns = ['Referencia Proveedor', 'Código de Barras', 'Autor', 'Título', 'Formato', 'Serie', 'Precio Compra', 'Estilo',  'Sello']
+
+    #Comprobamos la estructura
+    fv.comprobarCampos(data, templateColumns)
 
     # Forzamos que la referencia sea un campo texto
     data['Referencia Proveedor'] = data['Referencia Proveedor'].astype(str)

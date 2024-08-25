@@ -1,5 +1,6 @@
 import pandas as pd
 import procesadores.funcionesGenericas as fg
+import procesadores.funcionesValidacion as fv
 import json
 import re
 import numpy as np
@@ -33,8 +34,11 @@ def procesarExcel(data, nombre_hoja = None):
     df_cleaned = df_cleaned.dropna(how='all')
     data = df_cleaned
 
-    # Renombramos las coumnas
-    data.columns = ['Referencia Proveedor', 'Autor', 'Título', 'Formato', 'Código de Barras', 'Precio Compra', 'Serie', 'Comentarios', 'Portada',  'Observaciones']
+    #Establecemos el diseño de los campos del procesador
+    templateColumns = ['Referencia Proveedor', 'Autor', 'Título', 'Formato', 'Código de Barras', 'Precio Compra', 'Serie', 'Comentarios', 'Portada',  'Observaciones']
+
+    #Comprobamos la estructura
+    fv.comprobarCampos(data, templateColumns)
 
     # Para el precio, reemplazamos el símbolo de decimal de punto a coma
     data['Precio Compra'] = data['Precio Compra'].astype(str).str.replace('.', ',')

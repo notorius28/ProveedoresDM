@@ -1,14 +1,18 @@
 import pandas as pd
 import procesadores.funcionesGenericas as fg
+import procesadores.funcionesValidacion as fv
 import json
 from datetime import datetime, timedelta
 import re
 
 def procesarExcel(data, nombre_hoja = None):
 
-    # Renombramos las coumnas
-    data.columns = ['Código de Barras', 'Autor', 'Título', 'Sello', 'Formato', 'Component units', 'Fecha Lanzamiento', 'Price code', 'Precio Compra', 'Currency', 'Av. Stock']
-    
+    #Establecemos el diseño de los campos del procesador
+    templateColumns = ['Código de Barras', 'Autor', 'Título', 'Sello', 'Formato', 'Component units', 'Fecha Lanzamiento', 'Price code', 'Precio Compra', 'Currency', 'Av. Stock']
+
+    #Comprobamos la estructura
+    fv.comprobarCampos(data, templateColumns)
+
     # Filtramos en este procesador para retornar lanzamientos de los últimos 30 días
     data['Fecha Lanzamiento'] = pd.to_datetime(data['Fecha Lanzamiento'])
     hoy = datetime.today()

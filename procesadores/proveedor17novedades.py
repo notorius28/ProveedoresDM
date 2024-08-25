@@ -1,5 +1,6 @@
 import pandas as pd
 import procesadores.funcionesGenericas as fg
+import procesadores.funcionesValidacion as fv
 import json
 import streamlit as st
 import re
@@ -31,8 +32,11 @@ def procesarExcel(data, nombre_hoja = None, multitab = False):
     # Eliminar filas completamente vacías
     data = data.dropna(how='all')
 
-    # Renombramos las columnas
-    data.columns = ['Referencia Proveedor', 'GP', 'Precio Compra', 'Formato', 'Autor', 'Título', 'Sello']
+    #Establecemos el diseño de los campos del procesador
+    templateColumns = ['Referencia Proveedor', 'GP', 'Precio Compra', 'Formato', 'Autor', 'Título', 'Sello']
+
+    #Comprobamos la estructura
+    fv.comprobarCampos(data, templateColumns)
 
     # Forzamos que la referencia sea un campo texto
     data['Referencia Proveedor'] = data['Referencia Proveedor'].astype(str)
