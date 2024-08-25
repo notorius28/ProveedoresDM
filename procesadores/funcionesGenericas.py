@@ -2,9 +2,6 @@ import re
 from datetime import datetime
 import json
 
-import re
-from datetime import datetime
-
 def obtener_fecha_desde_texto(text):
     # Lista de patrones
     patterns = [
