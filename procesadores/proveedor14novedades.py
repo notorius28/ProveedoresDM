@@ -4,6 +4,9 @@ import procesadores.funcionesValidacion as fv
 import json
 import re
 
+from procesadores.decoradores import multitab_property
+@multitab_property(False)
+
 def procesarExcel(data, nombre_hoja = None):
 
     #Establecemos el diseño de los campos del procesador

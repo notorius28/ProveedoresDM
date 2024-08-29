@@ -3,7 +3,9 @@ import procesadores.funcionesGenericas as fg
 import procesadores.funcionesValidacion as fv
 import json
 import re
+from procesadores.decoradores import multitab_property
 
+@multitab_property(False)
 def procesarExcel(data, nombre_hoja = None):
     # Comprobar si, en la celda B3, viene un texto con una fecha para usarla luego como Fecha de Lanzamiento
     release_date = fg.extraer_fecha(data.iat[1,1])

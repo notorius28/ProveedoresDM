@@ -97,22 +97,28 @@ if st.session_state.excel_dict:
     spec = importlib.util.spec_from_file_location(procesador_seleccionado, procesador_seleccionado)
     procesador_module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(procesador_module)
+    multitab = procesador_module.procesarExcel.multitab
 
     # Obtener la fecha actual
     hoy = datetime.today()
     # Calcular la fecha correspondiente a 30 días antes
     hace_un_mes = hoy - timedelta(days=30)
 
+    #Si el proveedor se ha definido que no es multitab pero el fichero tiene varias pestañas, eliminamos todas las que no sean la primera
+    if multitab is False and numero_tabs > 1:
+        primera_clave, primer_valor = next(iter(st.session_state.excel_dict.items()))
+        st.session_state.excel_dict.clear()
+        st.session_state.excel_dict[primera_clave] = primer_valor
+        numero_tabs = 1
+        
     # En un bucle, leemos cada pestaña del excel
     for nombre, hoja in st.session_state.excel_dict.items():
         
-        if numero_tabs > 1:
-            multitab = True
+        if multitab is True and numero_tabs > 1:
             # En multipestaña, obtenemos la fecha del nombre de la pestaña y no mostramos datos previso
             fecha_tab = datetime.strptime(fg.obtener_fecha_desde_texto(nombre),'%Y-%m-%d') 
         else:
             # Con una sola pestaña, mostramos la vista previa y el total de registros
-            multitab= False
             fecha_tab = hoy
             st.write("Aquí están los datos del fichero original:")
             st.dataframe(hoja)
@@ -137,7 +143,7 @@ if st.session_state.excel_dict:
             try:
                 # Comprobamos que la pestaña sea de una fecha reciente y procesamos el excel, almacenando los resultados en dos dataframes                             
                 if fecha_tab >= hace_un_mes:
-                    if multitab:
+                    if multitab is True and numero_tabs > 1:
                         df_procesado, df_procesado_sin_formato = procesador_module.procesarExcel(hoja, nombre, multitab)
                     else:
                         df_procesado, df_procesado_sin_formato = procesador_module.procesarExcel(hoja, nombre)

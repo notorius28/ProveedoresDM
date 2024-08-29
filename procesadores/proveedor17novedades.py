@@ -4,7 +4,9 @@ import procesadores.funcionesValidacion as fv
 import json
 import streamlit as st
 import re
+from procesadores.decoradores import multitab_property
 
+@multitab_property(True)
 def procesarExcel(data, nombre_hoja = None, multitab = False):
 
     # Obtener la fecha de lanzamiento desde el texto en la primera fila
