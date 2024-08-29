@@ -9,8 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Novedades
 
-- Añadida configuración al proveedor 17 novedades para poder trabajar dos estructuras: una de 11 columnas y otra de 13 columnas
-- Añadida propiedad a cada procesador de proveedor para indicar si pueden ser multipestaña o no. En caso de que un proveedor esté configurado como que no es multipestaña y el excel contiene varias, se procesaría solo la primera (por ejemplo, prov 17 novedades)
+- Añadida configuración al proveedor 42 novedades para poder trabajar dos estructuras: una de 11 columnas y otra de 13 columnas
+- Añadida propiedad a cada procesador de proveedor para indicar si pueden ser multipestaña o no. En caso de que un proveedor esté configurado como que no es multipestaña y el excel contiene varias, se procesaría solo la primera (por ejemplo, prov 42 novedades)
 
 ## [1.0.18] 2024/08/25
 
