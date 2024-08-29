@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.19] 2024/08/29
+
+## Novedades
+
+- Añadida configuración al proveedor 17 novedades para poder trabajar dos estructuras: una de 11 columnas y otra de 13 columnas
+- Añadida propiedad a cada procesador de proveedor para indicar si pueden ser multipestaña o no. En caso de que un proveedor esté configurado como que no es multipestaña y el excel contiene varias, se procesaría solo la primera (por ejemplo, prov 17 novedades)
+
 ## [1.0.18] 2024/08/25
 
 ## Novedades
