@@ -116,7 +116,11 @@ if st.session_state.excel_dict:
         
         if multitab is True and numero_tabs > 1:
             # En multipestaña, obtenemos la fecha del nombre de la pestaña y no mostramos datos previso
-            fecha_tab = datetime.strptime(fg.obtener_fecha_desde_texto(nombre),'%Y-%m-%d') 
+            try:
+                fecha_tab = datetime.strptime(fg.obtener_fecha_desde_texto(nombre),'%Y-%m-%d') 
+            except:
+                st.error("La fecha en la pestaña " + nombre + " no tiene la estructura correcta. Renombre la pestaña.", icon="🚨")
+                st.stop()
         else:
             # Con una sola pestaña, mostramos la vista previa y el total de registros
             fecha_tab = hoy
