@@ -12,12 +12,21 @@ def procesarExcel(data, nombre_hoja = None):
 
     # Iterar sobre las filas para encontrar la primera que cumpla una de las condiciones: o tiene todos los datos rellenos o la primera columna se llama INTÉRPRETE
     for idx in data.index:
+        if pd.isna(idx):
+            continue
+
         row = data.iloc[idx]
-        if row.notnull().all() or row.iloc[0] == 'INTÉRPRETE':
+        
+        # Verificar que el primer valor de la fila no sea <NA>
+        first_value = row.iloc[0]
+        
+        # Comprobar que la fila no contenga valores nulos o que el primer valor sea 'INTÉRPRETE'
+        if row.notnull().all() or (pd.notna(first_value) and first_value == 'INTÉRPRETE'):
             referencia_row = idx
             break
     else:
         referencia_row = None  # Si no se encuentra una fila que cumpla con las condiciones
+
 
     # Eliminar todas las filas anteriores a la fila que contiene "REFERENCIA"
     data = data.iloc[referencia_row:].reset_index(drop=True)  
