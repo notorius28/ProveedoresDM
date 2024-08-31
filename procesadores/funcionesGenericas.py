@@ -1,6 +1,7 @@
 import re
 from datetime import datetime
 import json
+import streamlit as st
 
 def obtener_fecha_desde_texto(text):
     # Lista de patrones
@@ -21,20 +22,19 @@ def obtener_fecha_desde_texto(text):
     for pattern, processor in patterns:
         match = re.search(pattern, text)
         if match:
-            day, month, year = processor(match)
-            
-            # Convertir el mes a un número
-            month_num = months.get(month.upper())
-            if month_num:
-                # Convertir el año a un entero y ajustar al siglo XXI si es necesario
-                year = int(year)
-                if year < 100:  # Si el año tiene dos dígitos
-                    year += 2000
+                day, month, year = processor(match)
                 
-                # Formatear la fecha como cadena
-                date_str = f"{year}-{month_num}-{day.zfill(2)}"
-                return date_str
-
+                # Convertir el mes a un número
+                month_num = months.get(month.upper())
+                if month_num:
+                    # Convertir el año a un entero y ajustar al siglo XXI si es necesario
+                    year = int(year)
+                    if year < 100:  # Si el año tiene dos dígitos
+                        year += 2000
+                    
+                    # Formatear la fecha como cadena
+                    date_str = f"{year}-{month_num}-{day.zfill(2)}"
+                    return date_str
     return None  # No se encontró una fecha válida
 
 def eliminar_dobles_espacios(texto):
