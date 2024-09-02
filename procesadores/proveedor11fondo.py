@@ -85,6 +85,9 @@ def procesarExcel(data, nombre_hoja = None):
     data = data.dropna(subset=['Autor'])
     data = data.dropna(subset=['Título'])
 
+    # Normalizamos el precio para evitar que se mezclen cifras con comas y puntos como separador decimal
+    data['Precio Compra'] = data['Precio Compra'].apply(fg.normalizar_precio)
+
     # Ordenamos columnas
     columnas_ordenadas = ['Autor', 'Título', 'Sello', 'Fecha Lanzamiento', 'Referencia Proveedor', 'Código de Barras', 'Formato', 'Estilo','Comentarios','Precio Compra']
     data = data[columnas_ordenadas]

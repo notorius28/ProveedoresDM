@@ -102,6 +102,9 @@ def procesarExcel(data, nombre_hoja = None):
     # Quitamos del excel de salida las filas sin formato mapeados
     data = data.dropna(subset=['Formato'])
 
+    # Normalizamos el precio para evitar que se mezclen cifras con comas y puntos como separador decimal
+    data['Precio Compra'] = data['Precio Compra'].apply(fg.normalizar_precio)
+
     # Ordenamos columnas
     columnas_ordenadas = ['Autor', 'Título', 'Sello', 'Fecha Lanzamiento', 'Referencia Proveedor', 'Código de Barras', 'Formato', 'Estilo', 'Comentarios', 'Precio Compra']
     data = data[columnas_ordenadas]

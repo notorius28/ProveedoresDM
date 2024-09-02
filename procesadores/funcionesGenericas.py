@@ -100,3 +100,12 @@ def dataframe_en_mayusculas_excepto_una_columna(df, exclude_column):
         if column != exclude_column:
             df[column] = df[column].apply(lambda x: x.upper() if isinstance(x, str) else x)
     return df
+
+def normalizar_precio(precio):
+    # Convertir a string por si no lo es
+    precio_str = str(precio)
+    # Convertimos las comas a punto para que Pandas lo interpreta como decimal
+    if ',' in precio_str:
+        precio_str = precio_str.replace(',', '.')
+    # Convertimos el string a float y luego lo dejamos en formato de coma como decimal
+    return float(precio_str)
