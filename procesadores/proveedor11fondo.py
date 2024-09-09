@@ -49,7 +49,8 @@ def procesarExcel(data, nombre_hoja = None):
     data = data.applymap(lambda x: x.upper() if isinstance(x, str) else x)
 
     # Para los formatos, eliminamos el espacio en blanco entre la cantidad y el soporte
-    data['Formato'] = data['Formato'].str.split().agg("".join)
+    #data['Formato'] = data['Formato'].str.split().agg("".join)
+    data['Formato'] = data.apply(lambda row: fg.eliminar_espacios_en_blanco(row['Formato'], row.name), axis=1)
 
     # Leemos el diccionario de formatos para mapearlos con el fichero
     with open('diccionarios/formatos.json', 'r', encoding='utf-8') as f:
@@ -86,7 +87,8 @@ def procesarExcel(data, nombre_hoja = None):
     data = data.dropna(subset=['Título'])
 
     # Normalizamos el precio para evitar que se mezclen cifras con comas y puntos como separador decimal
-    data['Precio Compra'] = data['Precio Compra'].apply(fg.normalizar_precio)
+    #data['Precio Compra'] = data['Precio Compra'].apply(fg.normalizar_precio)
+    data['Precio Compra'] = data.apply(lambda row: fg.normalizar_precio(row['Precio Compra'], row.name), axis=1)
 
     # Ordenamos columnas
     columnas_ordenadas = ['Autor', 'Título', 'Sello', 'Fecha Lanzamiento', 'Referencia Proveedor', 'Código de Barras', 'Formato', 'Estilo','Comentarios','Precio Compra']
