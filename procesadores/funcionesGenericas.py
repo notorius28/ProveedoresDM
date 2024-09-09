@@ -101,11 +101,27 @@ def dataframe_en_mayusculas_excepto_una_columna(df, exclude_column):
             df[column] = df[column].apply(lambda x: x.upper() if isinstance(x, str) else x)
     return df
 
-def normalizar_precio(precio):
-    # Convertir a string por si no lo es
-    precio_str = str(precio)
-    # Convertimos las comas a punto para que Pandas lo interpreta como decimal
-    if ',' in precio_str:
-        precio_str = precio_str.replace(',', '.')
-    # Convertimos el string a float y luego lo dejamos en formato de coma como decimal
-    return float(precio_str)
+def normalizar_precio(valor, indice):
+    errores = []  
+    try:
+        # Convertir a string por si no lo es
+        precio_str = str(valor)
+        # Convertimos las comas a punto para que Pandas lo interpreta como decimal
+        if ',' in precio_str:
+            precio_str = precio_str.replace(',', '.')
+        # Convertimos el string a float y luego lo dejamos en formato de coma como decimal
+        return float(precio_str)
+    except Exception as e:
+        # Si hay un error, lo agregamos a la lista de errores con la fila afectada
+        errores.append(f"Error en fila {indice}, valor: {valor}, mensaje: {e}")
+        return valor  # Retorna el valor original si falla
+    
+def eliminar_espacios_en_blanco(valor, indice):
+    errores = []  
+    try:
+        # Si el valor es una cadena, eliminamos los espacios
+        return ''.join(valor.split()) if isinstance(valor, str) else valor
+    except Exception as e:
+        # Si hay un error, lo agregamos a la lista de errores con la fila afectada
+        errores.append(f"Error en fila {indice}, valor: {valor}, mensaje: {e}")
+        return valor  # Retorna el valor original si falla
