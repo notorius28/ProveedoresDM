@@ -75,8 +75,12 @@ def procesarExcel(data, nombre_hoja = None):
     # Detectamos las filas con autor o título vacío
     referencias_sin_titulo_o_autor = data[(data['Autor'].isna()) | (data['Título'].isna()) | (data['Autor'] == '') | (data['Título'] == '')]
 
+    # Detectamos filas con caracteres no ASCII
+    regex_ascii = re.compile(r'[^\x00-\x7F]+')
+    data_no_ascii = data[data.apply(lambda row: row.astype(str).apply(lambda x: bool(regex_ascii.search(x))).any(), axis=1)] 
+
     # Añadir estas filas a data_sin_formato
-    data_no_exportada = pd.concat([data_sin_formato, referencias_sin_titulo_o_autor], ignore_index=True)
+    data_no_exportada = pd.concat([data_sin_formato, referencias_sin_titulo_o_autor, data_no_ascii], ignore_index=True)
 
     # Mapeamos formatos del diccionario
     data['Formato'] = data['Formato'].map(dict_formats)
