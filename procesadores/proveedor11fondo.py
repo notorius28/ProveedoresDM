@@ -80,15 +80,17 @@ def procesarExcel(data, nombre_hoja = None):
     data_no_ascii = data[data.apply(lambda row: row.astype(str).apply(lambda x: bool(regex_ascii.search(x))).any(), axis=1)] 
 
     # Añadir estas filas a data_sin_formato
-    data_no_exportada = pd.concat([data_sin_formato, referencias_sin_titulo_o_autor, data_no_ascii], ignore_index=True)
+    data_no_exportada = pd.concat([data_sin_formato, referencias_sin_titulo_o_autor, data_no_ascii])
 
     # Mapeamos formatos del diccionario
     data['Formato'] = data['Formato'].map(dict_formats)
 
     # Quitamos del excel de salida las filas sin formato mapeados y sin autor o título
-    data = data.dropna(subset=['Formato']) 
-    data = data.dropna(subset=['Autor'])
-    data = data.dropna(subset=['Título'])
+    #data = data.dropna(subset=['Formato']) 
+    #data = data.dropna(subset=['Autor'])
+    #data = data.dropna(subset=['Título'])
+
+    data  = data.drop(data_no_exportada.index)
 
     # Normalizamos el precio para evitar que se mezclen cifras con comas y puntos como separador decimal
     #data['Precio Compra'] = data['Precio Compra'].apply(fg.normalizar_precio)
