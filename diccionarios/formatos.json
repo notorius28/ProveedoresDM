@@ -67,7 +67,7 @@
     "CDL": "CD",
     "CDS": "CDsingle",
     "DIGIPACK CD": "CD",
-    "EP": "MINILP",
+    "EP": "MiniLP",
     "LIBRO": "LIBRO",
     "LIBRO+CD": "LIBRO+CD",
     "CD+LIBRO": "LIBRO+CD",
