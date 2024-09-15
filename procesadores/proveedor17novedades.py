@@ -15,8 +15,6 @@ def procesarExcel(data, nombre_hoja = None, multitab = False):
     else: 
         release_date = fg.obtener_fecha_desde_texto(data.columns[0])
 
-    # Encontrar la fila que contiene 'REFERENCIA' o está completamente llena
-    #referencia_row = data.apply(lambda row: row.notnull().all() or row.iloc[0] == 'REFERENCIA', axis=1).idxmax()
     # Aplica la función y maneja los NaN llenándolos con False antes de aplicar la máscara
     mask = data.apply(lambda row: row.notnull().all() or row.iloc[0] == 'REFERENCIA', axis=1).fillna(False)
 
@@ -31,8 +29,8 @@ def procesarExcel(data, nombre_hoja = None, multitab = False):
         data.columns = data.iloc[0]
         data = data[1:].reset_index(drop=True)
 
-    # Eliminar filas completamente vacías
-    data = data.dropna(how='all')
+    # Eliminar filas que no estén completamente rellenas
+    data = data.dropna(how='any')
 
     #Establecemos el diseño de los campos del procesador
     templateColumns = ['Referencia Proveedor', 'GP', 'Precio Compra', 'Formato', 'Autor', 'Título', 'Sello']
