@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.24] 2024/09/15
+
+## Correcciones
+
+- Para el "Proveedor 11 fondo", se soluciona el problema por el que seguían incluyendose en la exportación filas con caracteres extraños
+- Para el "Proveedore 17 novedades", se soluciona un error para pestañas que no contenían ninguna referencia
+- Reemplazado "MINILP" como "MiniLP" en el diccionario de formatos
+
 ## [1.0.23] 2024/09/10
 
 ## Correcciones
