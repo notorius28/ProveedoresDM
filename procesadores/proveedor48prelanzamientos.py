@@ -6,12 +6,44 @@ import re
 import numpy as np
 from procesadores.decoradores import multitab_property, dateontab_property
 
-@multitab_property(False)
+@multitab_property(True)
 @dateontab_property(False)
-def procesarExcel(data, nombre_hoja = None):
+def procesarExcel(data, nombre_hoja = None, multitab = False):
 
-    #Establecemos el diseño de los campos del procesador
-    templateColumns = ['Fecha Lanzamiento', 'Referencia Proveedor', 'Código de Barras', 'Autor', 'Título', 'Formato', 'Serie', 'Precio Compra', 'Estilo',  'Sello', 'Stock']
+    # Obtener la fecha de lanzamiento desde el texto en la primera fila
+    release_date = fg.obtener_fecha_desde_texto(data.columns[0])
+    print(release_date)
+
+    # Iterar sobre las filas para encontrar la primera que cumpla una de las condiciones: o tiene todos los datos rellenos o la primera columna se llama REFERENCIA
+    for idx in data.index:
+        row = data.iloc[idx]
+        if pd.isna(row.iloc[0]):
+            print ("El fichero contiene líneas vacías")
+        else: 
+            if row.notnull().all() or row.iloc[0] == 'REFERENCIA':
+                referencia_row = idx
+                break
+    else:
+        referencia_row = None  # Si no se encuentra una fila que cumpla con las condiciones
+
+    # Eliminar todas las filas anteriores a la fila que contiene "REFERENCIA"
+    df_cleaned = data.iloc[referencia_row:].reset_index(drop=True)
+
+    if row.iloc[0] == 'REFERENCIA': 
+        # Asignar la primera fila como los nuevos encabezados
+        df_cleaned.columns = df_cleaned.iloc[0]
+        df_cleaned = df_cleaned[1:].reset_index(drop=True)
+
+    # Eliminar filas que están completamente vacías
+    df_cleaned = df_cleaned.dropna(how='all')
+    data = df_cleaned
+
+    if release_date:
+        #Establecemos el diseño de los campos del procesador cuando tenemos la fecha de lanzamiento en la primera fila
+        templateColumns = ['Referencia Proveedor', 'Código de Barras', 'Autor', 'Título', 'Formato', 'Serie', 'Precio Compra', 'Estilo',  'Sello', 'PVP']
+    else:
+        #Establecemos el diseño de los campos del procesador cuando tenemos la fecha de lanzamiento en la primera fila
+        templateColumns = ['Fecha Lanzamiento','Referencia Proveedor', 'Código de Barras', 'Autor', 'Título', 'Formato', 'Serie', 'Precio Compra', 'PVP', 'Estilo',  'Sello', ]
 
     #Comprobamos la estructura
     fv.comprobarCampos(data, templateColumns)
@@ -24,7 +56,7 @@ def procesarExcel(data, nombre_hoja = None):
 
     # Forzamos a texto el código de barras, rellenando con ceros hasta 13 caracteres
     data['Código de Barras'] = data['Código de Barras'].astype(str).str.zfill(13)
-
+    
     # Eliminamos espacios dobles
     data = data.applymap(fg.eliminar_dobles_espacios)
 
@@ -37,6 +69,17 @@ def procesarExcel(data, nombre_hoja = None):
 
     # Aplicamos canonización de datos a términos como Varios Artistas o BSO
     data = fg.mapear_autor(data, 'Autor')
+
+    # Convertir release_date a datetime si no lo es ya
+    if not isinstance(release_date, pd.Timestamp):
+        release_date = pd.to_datetime(release_date)
+
+    # Rellenar todas las fechas de lanzamiento con la fecha obtenida
+    if release_date:
+        data['Fecha Lanzamiento'] = release_date.strftime('%d-%m-%Y')
+    else:
+        data['Fecha Lanzamiento'] = pd.to_datetime(data['Fecha Lanzamiento'], errors='coerce')
+        data['Fecha Lanzamiento'] = data['Fecha Lanzamiento'].dt.strftime('%d-%m-%Y')
 
     # Ponemos todos los textos en mayúsculas
     data = data.applymap(lambda x: x.upper() if isinstance(x, str) else x)
