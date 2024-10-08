@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.25] 2024/10/08
+
+## Novedades
+
+- Añadido el "Proveedor 48 prelanzamientos", que permite además cargar varios ficheros a la vez y que los consolide en un único fichero excel con tantas pestañas como ficheros subidos, para su posterior procesamiento. Este proveedor permite dos diseños de registro: uno con la fecha de lanzamiento en la cabecera y otro con la fecha de lanzamiento en una columna.
+- El listado de proveedores se ordena alfabéticamente
+
+## Notas de Desarrollo
+
+- Añadida una propiedad DateOnTab para marcar qué proveedores envían la fecha de lanzamiento en el título de la pestaña y no dentro de la hoja
+- Añadida libreria xlsxwriter a los requisitos
+
 ## [1.0.24] 2024/09/15
 
 ## Correcciones

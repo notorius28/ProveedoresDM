@@ -3,9 +3,10 @@ import procesadores.funcionesGenericas as fg
 import procesadores.funcionesValidacion as fv
 import json
 import re
-from procesadores.decoradores import multitab_property
+from procesadores.decoradores import multitab_property, dateontab_property
 
 @multitab_property(False)
+@dateontab_property(False)
 def procesarExcel(data, nombre_hoja = None):
     # Comprobar si, en la celda B3, viene un texto con una fecha para usarla luego como Fecha de Lanzamiento
     release_date = fg.extraer_fecha(data.iat[1,1])
@@ -26,7 +27,6 @@ def procesarExcel(data, nombre_hoja = None):
             break
     else:
         referencia_row = None  # Si no se encuentra una fila que cumpla con las condiciones
-
 
     # Eliminar todas las filas anteriores a la fila que contiene "REFERENCIA"
     data = data.iloc[referencia_row:].reset_index(drop=True)  

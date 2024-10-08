@@ -46,6 +46,7 @@ st.title("Aplicación de Procesamiento de Archivos Excel")
 
 # Selector de procesador
 procesadores_disponibles = glob.glob("procesadores/proveedor*.py")
+procesadores_disponibles.sort()
 procesador_seleccionado = st.selectbox("Selecciona un procesador:", procesadores_disponibles)
 
 # Mostramos un mensaje específico para algunos procesadores
@@ -61,12 +62,32 @@ def cachear_fichero(file):
 
 # Función para leer el fichero (con caché)
 @st.cache_data(show_spinner="Leyendo archivo Excel...")
-def leer_excel(uploaded_file):
-    if uploaded_file is not None:
-        file_bytes = BytesIO(uploaded_file.read())
+def leer_excel(archivos):
+    if len(archivos) >= 2:   
+        # Crear un objeto BytesIO para almacenar el archivo Excel resultante en memoria
+        newExcel = BytesIO()
+
+        # Escribir en el archivo Excel con múltiples hojas
+        with pd.ExcelWriter(newExcel, engine='xlsxwriter') as writer:
+            for idx, archivo in enumerate(archivos):
+                # Leer cada archivo Excel
+                df = pd.read_excel(archivo, dtype=object)
+
+                # El nombre de la hoja será el nombre del archivo sin la extensión
+                nombre_hoja = f"Tabla_{idx+1}"
+                
+                 # Escribir el DataFrame en una nueva hoja del archivo Excel
+                df.to_excel(writer, sheet_name=nombre_hoja, index=False)
+
+        # Mover el puntero de bytes al inicio del archivo
+        newExcel.seek(0)
+        joined_df = pd.read_excel(newExcel, sheet_name=None, dtype=object)
+
+        return joined_df
+    elif len(archivos) == 1:
+        file_bytes = BytesIO(archivos[0].read())
         df = pd.read_excel(file_bytes, sheet_name=None, dtype=object)
         return df
-    return None
 
 # Función para obtener el número de pestañas del fichero excel 
 def obtener_numero_de_tabs(file):
@@ -77,13 +98,12 @@ def click_boton_procesar_fichero():
     st.session_state.clicked = True
 
 # Mostrarmos el botón de importar fichero al cargar el formulario
-ficheroExcel = st.file_uploader("Sube tu archivo Excel", type=["xlsx","xls"], accept_multiple_files=False, on_change=reiniciar_estados)
-st.session_state.cached_file = cachear_fichero(ficheroExcel)
+archivos = st.file_uploader("Sube tu archivo Excel", type=["xlsx","xls"], accept_multiple_files=True, on_change=reiniciar_estados)
+st.session_state.cached_file = cachear_fichero(archivos)
 
 # Si se ha subido el fichero, leemos el excel y lo guardamos en un diccionario
 if st.session_state.cached_file:
     st.session_state.excel_dict = leer_excel(st.session_state.cached_file)
-    #st.session_state.cached_file = None
 
 # Con el fichero excel en memoria, ejecutamos los procesos de transformación
 if st.session_state.excel_dict: 
@@ -98,6 +118,7 @@ if st.session_state.excel_dict:
     procesador_module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(procesador_module)
     multitab = procesador_module.procesarExcel.multitab
+    dateontab = procesador_module.procesarExcel.dateontab
 
     # Obtener la fecha actual
     hoy = datetime.today()
@@ -114,13 +135,15 @@ if st.session_state.excel_dict:
     # En un bucle, leemos cada pestaña del excel
     for nombre, hoja in st.session_state.excel_dict.items():
         
-        if multitab is True and numero_tabs > 1:
+        if multitab is True and dateontab is True and numero_tabs > 1:
             # En multipestaña, obtenemos la fecha del nombre de la pestaña y no mostramos datos previso
             try:
                 fecha_tab = datetime.strptime(fg.obtener_fecha_desde_texto(nombre),'%Y-%m-%d') 
             except:
                 st.error("La fecha en la pestaña " + nombre + " no tiene la estructura correcta. Renombre la pestaña.", icon="🚨")
                 st.stop()
+        elif multitab is True and dateontab is False and numero_tabs > 1:
+            fecha_tab = hoy
         else:
             # Con una sola pestaña, mostramos la vista previa y el total de registros
             fecha_tab = hoy
@@ -146,7 +169,7 @@ if st.session_state.excel_dict:
             
             try:
                 # Comprobamos que la pestaña sea de una fecha reciente y procesamos el excel, almacenando los resultados en dos dataframes                             
-                if fecha_tab >= hace_un_mes:
+                if fecha_tab >= hace_un_mes or dateontab is False:
                     if multitab is True and numero_tabs > 1:
                         df_procesado, df_procesado_sin_formato = procesador_module.procesarExcel(hoja, nombre, multitab)
                     else:

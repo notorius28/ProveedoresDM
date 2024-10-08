@@ -3,9 +3,10 @@ import procesadores.funcionesGenericas as fg
 import procesadores.funcionesValidacion as fv
 import json
 import re
-from procesadores.decoradores import multitab_property
+from procesadores.decoradores import multitab_property, dateontab_property
 
 @multitab_property(False)
+@dateontab_property(False)
 def procesarExcel(data, nombre_hoja = None):
 
     # Obtener la fecha de lanzamiento desde el texto en la primera fila

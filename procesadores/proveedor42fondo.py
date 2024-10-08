@@ -4,13 +4,13 @@ import procesadores.funcionesValidacion as fv
 import json
 from datetime import datetime, timedelta
 import re
-from procesadores.decoradores import multitab_property
+from procesadores.decoradores import multitab_property, dateontab_property
 
 @multitab_property(False)
+@dateontab_property(False)
 def procesarExcel(data, nombre_hoja = None):
 
     #Este proveedor puede traer dos formatos diferentes: con 11 columnas o con 13 columnas. Comprobamos entonces dos tipos de plantilla diferentes
-
     if len(data.columns) == 11:
         #Establecemos el diseño de los campos del procesador
         templateColumns = ['Código de Barras', 'Autor', 'Título', 'Sello', 'Formato', 'Component units', 'Fecha Lanzamiento', 'Price code', 'Precio Compra', 'Currency', 'Av. Stock']
