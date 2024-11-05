@@ -125,3 +125,6 @@ def eliminar_espacios_en_blanco(valor, indice):
         # Si hay un error, lo agregamos a la lista de errores con la fila afectada
         errores.append(f"Error en fila {indice}, valor: {valor}, mensaje: {e}")
         return valor  # Retorna el valor original si falla
+
+def reemplazar_caracteres_no_validos(df):
+    return df.replace('″', '"', regex=True)
