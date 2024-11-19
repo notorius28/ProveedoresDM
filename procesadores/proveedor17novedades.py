@@ -40,7 +40,7 @@ def procesarExcel(data, nombre_hoja = None, multitab = False):
     fv.comprobarCampos(data, templateColumns)
 
     #Reemplazamos caracteres no válidos
-    fg.reemplazar_caracteres_no_validos(data)
+    fg.reemplazar_caracteres_no_validos(data, 'Título')
 
     # Forzamos que la referencia sea un campo texto
     data['Referencia Proveedor'] = data['Referencia Proveedor'].astype(str)
