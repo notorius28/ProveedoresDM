@@ -36,15 +36,17 @@ def procesarExcel(data, nombre_hoja = None):
         data.columns = data.iloc[0]
         data = data[1:].reset_index(drop=True)
 
-    # Eliminar filas que están completamente vacías o que no tengan título
+    # Eliminar filas que están completamente vacías
     data = data.dropna(how='all')
-    data = data.dropna(subset=['TÍTULO'])
 
-    #Establecemos el diseño de los campos del procesador
+    # Establecemos el diseño de los campos del procesador
     templateColumns = ['Autor', 'Título', 'Referencia Proveedor', 'Código de Barras','Formato', 'Precio Compra',  'Estilo Proveedor', 'Sello']
 
     #Comprobamos la estructura
     fv.comprobarCampos(data, templateColumns)
+
+    # Eliminamos las columnas que no tienen título
+    data = data.dropna(subset=['Título'])
 
     # Forzamos que la referencia sea un campo texto
     data['Referencia Proveedor'] = data['Referencia Proveedor'].astype(str)
