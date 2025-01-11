@@ -56,8 +56,7 @@ def procesarExcel(data, nombre_hoja = None, multitab = False):
     # Eliminamos espacios dobles
     data = data.applymap(fg.eliminar_dobles_espacios)
 
-    # Creamos columnas vacías para Estilo, Comentarios y Fecha Lanzamiento
-    data['Estilo'] = pd.Series(dtype=str)
+    # Creamos columnas vacías para Comentarios
     data['Comentarios'] = pd.Series(dtype=str)
 
     # Para el Autor, ponemos el artículo THE al final precedido de una coma
@@ -84,7 +83,7 @@ def procesarExcel(data, nombre_hoja = None, multitab = False):
         terminos.sort(key=len, reverse=True)
 
     # Para los formatos que incluyen variación de color o edición, dejamos el formato solo como LP y añadimos la variación al Título
-    patronFormato = r'^(' + '|'.join(re.escape(term) for term in terminos) + r')\s+(.+)'
+    patronFormato = r'^(' + '|'.join(re.escape(term) for term in terminos) + r')(\s+.+)?$'
     data[['FormatoIzq', 'VariaciónDer']] = data['Formato'].str.extract(patronFormato, expand=True)
     # Ponemos como nulos los registros en 'VariaciónDer' cuyo valor sea "Vinilo", para que no se repita esa palabra
     data.loc[data['VariaciónDer'] == "VINILO", 'VariaciónDer'] = np.nan
