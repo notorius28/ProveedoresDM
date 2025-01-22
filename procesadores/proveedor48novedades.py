@@ -56,8 +56,9 @@ def procesarExcel(data, nombre_hoja = None, multitab = False):
     # Eliminamos espacios dobles
     data = data.applymap(fg.eliminar_dobles_espacios)
 
-    # Creamos columnas vacías para Comentarios
+    # Creamos columnas vacías para Comentarios y ponemos en blanco los Estilos
     data['Comentarios'] = pd.Series(dtype=str)
+    data['Estilo'] = pd.Series(dtype=str)
 
     # Para el Autor, ponemos el artículo THE al final precedido de una coma
     data['Autor'] = data['Autor'].apply(fg.mover_the_al_final)
