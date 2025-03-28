@@ -91,7 +91,7 @@ def procesarExcel(data, nombre_hoja = None, multitab = False):
     conjuntoConVariacion = data['VariaciónDer'].notna()
 
     # Solo ponemos la variante para los formatos LP en este proveedor
-    data.loc[(data['FormatoIzq'] == "LP") & (data['VariaciónDer'].notna()), 'Título'] =  data.loc[conjuntoConVariacion, 'Título'].astype(str) + ' (EDICIÓN VINILO ' + data.loc[conjuntoConVariacion, 'VariaciónDer'] + ')' 
+    data.loc[(data['FormatoIzq'].isin(["LP", "LP VINILO"])) & (data['VariaciónDer'].notna()), 'Título'] = data.loc[conjuntoConVariacion, 'Título'].astype(str) + ' (EDICIÓN VINILO ' + data.loc[conjuntoConVariacion, 'VariaciónDer'] + ')'
     data.loc[conjuntoConVariacion, 'Formato'] = data['FormatoIzq']
 
     # Obtener los valores que no tienen equivalencia en el diccionario para la columna 'A'
