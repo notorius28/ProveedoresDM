@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.31] 2025/04/15
+
+- Se actualiza el "Proveedor 42 fondo" para añadir la columna "pedido" a la plantilla y se elimina del procesador la configuración alternativa que incluía el genero en el fichero del proveedor
+
 ## [1.0.30] 2025/03/28
 
 ## Correcciones
