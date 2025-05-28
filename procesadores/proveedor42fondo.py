@@ -10,8 +10,11 @@ from procesadores.decoradores import multitab_property, dateontab_property
 @dateontab_property(False)
 def procesarExcel(data, nombre_hoja = None):
 
-     #Establecemos el diseño de los campos del procesador
-    templateColumns = ['Código de Barras', 'Autor', 'Título', 'Sello', 'Formato', 'Component units', 'Fecha Lanzamiento', 'Price code', 'Precio Compra', 'Currency', 'Av. Stock']
+     #Establecemos el diseño de los campos del procesador (anterior a 2025/05/28)
+    # templateColumns = ['Código de Barras', 'Autor', 'Título', 'Sello', 'Formato', 'Component units', 'Fecha Lanzamiento', 'Price code', 'Precio Compra', 'Currency', 'Av. Stock']
+
+    #Establecemos el diseño de los campos del procesador (anterior)
+    templateColumns = ['Código de Barras', 'Autor', 'Título', 'Pop-Classic', 'Sello', 'Formato', 'Component units', 'Fecha Lanzamiento', 'Price code', 'Precio Compra','Av. Stock']
 
     #Comprobamos la estructura
     fv.comprobarCampos(data, templateColumns)
