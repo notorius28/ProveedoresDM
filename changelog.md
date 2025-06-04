@@ -5,7 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.0.32] 2025/05/28
+## [1.0.34] 2025/06/04
+
+## Correcciones
+
+- Deshecho el cambio de la versión anterior en el diseño de campos de "Proveedor 42 fondo"
+- Añadida validación para este proveedor, para comprobar que el nombre de columnas y orden coincide exactamente con el siguiente:
+
+['Product Reference Number', 'Artist', 'Title', 'Local Marketing Company', 'Conf.', 'Component units', 'Release date', 'Price code', 'Unit PPD', 'Currency', 'Av. Stock']
+
+## [1.0.33] 2025/05/28
 
 ## Correcciones
 

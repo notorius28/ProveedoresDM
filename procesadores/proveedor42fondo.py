@@ -10,14 +10,14 @@ from procesadores.decoradores import multitab_property, dateontab_property
 @dateontab_property(False)
 def procesarExcel(data, nombre_hoja = None):
 
-     #Establecemos el diseño de los campos del procesador (anterior a 2025/05/28)
-    # templateColumns = ['Código de Barras', 'Autor', 'Título', 'Sello', 'Formato', 'Component units', 'Fecha Lanzamiento', 'Price code', 'Precio Compra', 'Currency', 'Av. Stock']
+    # Establecemos el diseño de los campos del proveedor
+    templateColumns = ['Product Reference Number', 'Artist', 'Title', 'Local Marketing Company', 'Conf.', 'Component units', 'Release date', 'Price code', 'Unit PPD', 'Currency', 'Av. Stock']
 
-    #Establecemos el diseño de los campos del procesador (anterior)
-    templateColumns = ['Código de Barras', 'Autor', 'Título', 'Pop-Classic', 'Sello', 'Formato', 'Component units', 'Fecha Lanzamiento', 'Price code', 'Precio Compra','Av. Stock']
+    # Comprobamos la estructura (debe tener mismo número de columnas y nombres)
+    fv.comprobarCamposNombreExacto(data, templateColumns)
 
-    #Comprobamos la estructura
-    fv.comprobarCampos(data, templateColumns)
+    # Renombramos las columnas para que coincidan con las del template
+    data.columns = ['Código de Barras', 'Autor', 'Título', 'Sello', 'Formato', 'Component units', 'Fecha Lanzamiento', 'Price code', 'Precio Compra', 'Currency', 'Av. Stock']
 
     # Filtramos en este procesador para retornar lanzamientos de los últimos 30 días
     data['Fecha Lanzamiento'] = pd.to_datetime(data['Fecha Lanzamiento'])
@@ -25,7 +25,7 @@ def procesarExcel(data, nombre_hoja = None):
     hace_un_mes = hoy - timedelta(days=30)
     data = data[data['Fecha Lanzamiento'] >= hace_un_mes]
 
-    #Convertimos la fecha de lanzamiento a formato dd/mm/YYYY
+    # Convertimos la fecha de lanzamiento a formato dd/mm/YYYY
     data['Fecha Lanzamiento'] = data['Fecha Lanzamiento'].dt.strftime('%d-%m-%Y')
 
     # Forzamos a texto el código de barras, rellenando con ceros hasta 13 caracteres
