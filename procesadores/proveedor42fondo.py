@@ -11,13 +11,13 @@ from procesadores.decoradores import multitab_property, dateontab_property
 def procesarExcel(data, nombre_hoja = None):
 
     # Establecemos el diseño de los campos del proveedor
-    templateColumns = ['Product Reference Number', 'Artist', 'Title', 'Local Marketing Company', 'Conf.', 'Component units', 'Release date', 'Price code', 'Unit PPD', 'Currency', 'Av. Stock']
+    templateColumns = ['Product Reference Number', 'Artist', 'Title', 'Local Marketing Company', 'Conf.', 'Component units', 'Release date', 'Price code', 'Unit PPD', 'Currency', 'Disponibilidad']
 
     # Comprobamos la estructura (debe tener mismo número de columnas y nombres)
     fv.comprobarCamposNombreExacto(data, templateColumns)
 
     # Renombramos las columnas para que coincidan con las del template
-    data.columns = ['Código de Barras', 'Autor', 'Título', 'Sello', 'Formato', 'Component units', 'Fecha Lanzamiento', 'Price code', 'Precio Compra', 'Currency', 'Av. Stock']
+    data.columns = ['Código de Barras', 'Autor', 'Título', 'Sello', 'Formato', 'Component units', 'Fecha Lanzamiento', 'Price code', 'Precio Compra', 'Currency', 'Disponibilidad']
 
     # Filtramos en este procesador para retornar lanzamientos de los últimos 30 días
     data['Fecha Lanzamiento'] = pd.to_datetime(data['Fecha Lanzamiento'])
