@@ -1,7 +1,8 @@
 import re
 from datetime import datetime
 import json
-import streamlit as st
+import html
+import pandas as pd
 
 def obtener_fecha_desde_texto(text):
     # Lista de patrones
@@ -127,4 +128,19 @@ def eliminar_espacios_en_blanco(valor, indice):
         return valor  # Retorna el valor original si falla
 
 def reemplazar_caracteres_no_validos(df, columna):
-    df[columna] = df[columna].str.replace('\u2033', '"', regex=False)
+    def clean_text(text):
+        if pd.isna(text):
+            return text
+        # primero repara encoding si está roto
+        try:
+            text = text.encode("latin-1").decode("utf-8")
+        except:
+            pass
+        # reemplazos específicos que ya tenías
+        text = text.replace('\u2033', '"')
+        # decodificación de entidades HTML (&AMP;, &Aacute;, etc.)
+        text = html.unescape(text)
+        return text
+    
+    df[columna] = df[columna].apply(clean_text)
+    return df

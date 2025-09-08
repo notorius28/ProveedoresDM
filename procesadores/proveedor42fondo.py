@@ -19,6 +19,12 @@ def procesarExcel(data, nombre_hoja = None):
     # Renombramos las columnas para que coincidan con las del template
     data.columns = ['Código de Barras', 'Autor', 'Título', 'Sello', 'Formato', 'Component units', 'Fecha Lanzamiento', 'Price code', 'Precio Compra', 'Currency', 'Disponibilidad']
 
+    # Corregimos posibles errores de codificación (símbolos extraños) en fichero de origen
+
+    cols = ["Autor", "Título"]  # ponemos aquí las columnas afectadas
+    for c in cols:
+        data = fg.reemplazar_caracteres_no_validos(data, c)
+
     # Filtramos en este procesador para retornar lanzamientos de los últimos 30 días
     data['Fecha Lanzamiento'] = pd.to_datetime(data['Fecha Lanzamiento'])
     hoy = datetime.today()

@@ -5,11 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.36] 2025/09/08
+
+## Correcciones
+
+- Función genérica para corregir errores de caracteres producto de una codificación no utf-8 o de entidades HTML a reparar. Se aplica de momento al "Proveedor 42 fondo"
+- Limpieza de imports en el código
+
 ## [1.0.35] 2025/06/25
 
 ## Correcciones
 
-- Modificada la plantilla "Proveedor 42 fondo", sustituyendo 'Av. Stock' por 'Disponibilidad2
+- Modificada la plantilla "Proveedor 42 fondo", sustituyendo 'Av. Stock' por 'Disponibilidad'
 
 ## [1.0.34] 2025/06/04
 
