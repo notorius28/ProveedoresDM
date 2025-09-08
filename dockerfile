@@ -1,21 +1,46 @@
-# app/Dockerfile
+# ==========================
+# 1. Build stage
+# ==========================
+FROM python:3.9-slim AS builder
+
+ENV DEBIAN_FRONTEND=noninteractive \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
+
+# Instalamos compiladores y dependencias de compilación
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    git \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+COPY requirements.txt .
+
+# Creamos un directorio con las dependencias ya instaladas
+RUN pip install --upgrade pip && pip install --prefix=/install -r requirements.txt
+
+# ==========================
+# 2. Final stage
+# ==========================
 FROM python:3.9-slim
 
 ENV DEBIAN_FRONTEND=noninteractive \
     PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
 
-# Instalamos solo curl (para el healthcheck)
+# Instalamos solo curl (para healthcheck en producción)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
-    && apt-get purge -y --auto-remove \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
-COPY requirements.txt .
-RUN pip install --upgrade pip && pip install -r requirements.txt
+# Copiamos las dependencias desde el builder
+COPY --from=builder /install /usr/local
 
+# Copiamos la app
 COPY . .
 
 EXPOSE 8501
