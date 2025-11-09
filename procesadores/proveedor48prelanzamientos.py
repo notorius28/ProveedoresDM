@@ -38,12 +38,15 @@ def procesarExcel(data, nombre_hoja = None, multitab = False):
     df_cleaned = df_cleaned.dropna(how='all')
     data = df_cleaned
 
-    if release_date:
-        #Establecemos el diseño de los campos del procesador cuando tenemos la fecha de lanzamiento en la primera fila
-        templateColumns = ['Referencia Proveedor', 'Código de Barras', 'Autor', 'Título', 'Formato', 'Serie', 'Precio Compra', 'Estilo',  'Sello', 'PVP']
-    else:
-        #Establecemos el diseño de los campos del procesador cuando tenemos la fecha de lanzamiento en la primera fila
-        templateColumns = ['Fecha Lanzamiento','Referencia Proveedor', 'Código de Barras', 'Autor', 'Título', 'Formato', 'Serie', 'Precio Compra', 'PVP', 'Estilo',  'Sello', ]
+    #if release_date:
+    #    #Establecemos el diseño de los campos del procesador cuando tenemos la fecha de lanzamiento en la primera fila
+    #    templateColumns = ['Referencia Proveedor', 'Código de Barras', 'Autor', 'Título', 'Formato', 'Serie', 'Precio Compra', 'Estilo',  'Sello', 'PVP']
+    #else:
+    #    #Establecemos el diseño de los campos del procesador cuando tenemos la fecha de lanzamiento en la primera fila
+    #    templateColumns = ['Fecha Lanzamiento','Referencia Proveedor', 'Código de Barras', 'Autor', 'Título', 'Formato', 'Serie', 'Precio Compra', 'PVP', 'Estilo',  'Sello', ]
+
+    #Establecemos la estructura del fichero
+    templateColumns = ['Referencia Proveedor', 'Código de Barras', 'Fecha Lanzamiento', 'Autor', 'Título', 'Formato', 'Serie', 'Precio Compra', 'Estilo',  'Sello', 'PVP']
 
     #Comprobamos la estructura
     fv.comprobarCampos(data, templateColumns)
