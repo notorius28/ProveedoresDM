@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.37] 2025/11/09
+
+## Novedades
+
+- Actualizado el modelo de datos para la plantila del Prov. 48 (Prelanzamientos)
+
 ## [1.0.36] 2025/09/08
 
 ## Correcciones
