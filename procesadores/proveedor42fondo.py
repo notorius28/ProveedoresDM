@@ -11,13 +11,13 @@ from procesadores.decoradores import multitab_property, dateontab_property
 def procesarExcel(data, nombre_hoja = None):
 
     # Establecemos el diseño de los campos del proveedor
-    templateColumns = ['Product Reference Number', 'Artist', 'Title', 'Local Marketing Company', 'Conf.', 'Component units', 'Release date', 'Price code', 'Unit PPD', 'Currency', 'Disponibilidad']
+    templateColumns = ['Product Reference Number', 'Artist', 'Title', 'Conf.', 'Component units', 'Pop-Classic Indicator', 'Local Marketing Company', 'Price code', 'Unit PPD', 'Currency', 'Release date', 'Stock Availability']
 
     # Comprobamos la estructura (debe tener mismo número de columnas y nombres)
     fv.comprobarCamposNombreExacto(data, templateColumns)
 
     # Renombramos las columnas para que coincidan con las del template
-    data.columns = ['Código de Barras', 'Autor', 'Título', 'Sello', 'Formato', 'Component units', 'Fecha Lanzamiento', 'Price code', 'Precio Compra', 'Currency', 'Disponibilidad']
+    data.columns = ['Código de Barras', 'Autor', 'Título', 'Formato', 'Component units', 'Pop-Classic Indicator', 'Sello', 'Price code', 'Precio Compra', 'Currency', 'Fecha Lanzamiento', 'Disponibilidad']
 
     # Corregimos posibles errores de codificación (símbolos extraños) en fichero de origen
 
