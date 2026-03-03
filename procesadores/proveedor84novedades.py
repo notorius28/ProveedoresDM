@@ -54,6 +54,9 @@ def procesarExcel(data, nombre_hoja = None):
     # Forzamos a texto el código de barras, rellenando con ceros hasta 13 caracteres
     data['Código de Barras'] = data['Código de Barras'].astype(str).str.zfill(13)
 
+    #Eliminamos espacios al final de los textos
+    data['Formato'] = data['Formato'].astype('string').str.strip()
+
     # Eliminamos espacios dobles
     data = data.applymap(fg.eliminar_dobles_espacios)
 

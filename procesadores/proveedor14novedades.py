@@ -27,6 +27,9 @@ def procesarExcel(data, nombre_hoja = None):
     
     # Eliminamos espacios dobles
     data = data.applymap(fg.eliminar_dobles_espacios)
+    
+    #Eliminamos espacios al final de los textos
+    data['Formato'] = data['Formato'].astype('string').str.strip()
 
     # Creamos columnas vacías para Estilo y Comentarios
     data['Estilo'] = pd.Series(dtype=str)

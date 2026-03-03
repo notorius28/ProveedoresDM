@@ -43,6 +43,9 @@ def procesarExcel(data, nombre_hoja = None):
     # Usar el código de barras para crear la referencia del proveedor
     data['Referencia Proveedor'] = data['Código de Barras']
 
+    #Eliminamos espacios al final de los textos
+    data['Formato'] = data['Formato'].astype('string').str.strip()
+
     # Creamos columnas vacías para Estilo y Comentarios
     data['Estilo'] = pd.Series(dtype=str)
     data['Comentarios'] = pd.Series(dtype=str)
