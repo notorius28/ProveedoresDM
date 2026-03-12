@@ -29,14 +29,21 @@ def procesarExcel(data, nombre_hoja = None, multitab = False):
         data.columns = data.iloc[0]
         data = data[1:].reset_index(drop=True)
 
+    # Admitimos dos layouts. Si viene la columna adicional "Pedido", la descartamos
+    # porque no participa en el procesamiento posterior.
+    templateColumns = ['Referencia Proveedor', 'GP', 'Precio Compra', 'Formato', 'Autor', 'Título', 'Sello']
+    templateColumnsAlt = ['Referencia Proveedor', 'Pedido', 'GP', 'Precio Compra', 'Formato', 'Autor', 'Título', 'Sello']
+
+    if len(data.columns) == len(templateColumns):
+        fv.comprobarCampos(data, templateColumns)
+    elif len(data.columns) == len(templateColumnsAlt):
+        fv.comprobarCampos(data, templateColumnsAlt)
+        data = data.drop(columns=['Pedido'])
+    else:
+        fv.comprobarCampos(data, templateColumns)
+
     # Eliminar filas que no estén completamente rellenas
     data = data.dropna(how='any')
-
-    #Establecemos el diseño de los campos del procesador
-    templateColumns = ['Referencia Proveedor', 'GP', 'Precio Compra', 'Formato', 'Autor', 'Título', 'Sello']
-
-    #Comprobamos la estructura
-    fv.comprobarCampos(data, templateColumns)
 
     #Reemplazamos caracteres no válidos
     fg.reemplazar_caracteres_no_validos(data, 'Título')
