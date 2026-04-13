@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.41] 2026/04/13
+
+## Novedades
+
+- Para el proveedor 23 Novedades, se amplia el procesamiento del fichero para los casos en los que se repiten los nombres de las columnas varias veces a lo largo del fichero original
+
 ## [1.0.40] 2026/03/12
 
 ## Novedades

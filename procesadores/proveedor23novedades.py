@@ -31,8 +31,11 @@ def procesarExcel(data, nombre_hoja = None):
     # Eliminar todas las filas anteriores a la fila que contiene "REFERENCIA"
     data = data.iloc[referencia_row:].reset_index(drop=True)  
 
+    encabezado_original = None
+
     if row.iloc[0] == 'INTÉRPRETE': 
     # Asignar la primera fila como los nuevos encabezados
+        encabezado_original = data.iloc[0].copy()
         data.columns = data.iloc[0]
         data = data[1:].reset_index(drop=True)
 
@@ -44,6 +47,18 @@ def procesarExcel(data, nombre_hoja = None):
 
     #Comprobamos la estructura
     fv.comprobarCampos(data, templateColumns)
+
+    # Eliminar filas posteriores que repiten la cabecera original del fichero.
+    if encabezado_original is not None:
+        encabezado_original_normalizado = encabezado_original.fillna('').astype(str).str.strip().str.upper().tolist()
+        mascara_encabezados_repetidos = data.apply(
+            lambda row: (
+                'INTÉRPRETE' in str(row.iloc[0]).strip().upper()
+                and row.fillna('').astype(str).str.strip().str.upper().tolist() == encabezado_original_normalizado
+            ),
+            axis=1
+        )
+        data = data.loc[~mascara_encabezados_repetidos].reset_index(drop=True)
 
     # Eliminamos las columnas que no tienen título
     data = data.dropna(subset=['Título'])
