@@ -96,7 +96,7 @@ def procesarExcel(data, nombre_hoja = None, multitab = False):
     data[['FormatoIzq', 'VariaciónDer']] = data['Formato'].str.extract(patronFormato, expand=True)
     conjuntoConVariacion = data['VariaciónDer'].notna()
     data.loc[conjuntoConVariacion, 'Título'] = data.loc[conjuntoConVariacion, 'Título'].astype(str) + ' (EDICIÓN VINILO ' + data.loc[conjuntoConVariacion, 'VariaciónDer'] + ')'
-    data.loc[conjuntoConVariacion, 'Formato'] = data['FormatoIzq']
+    data.loc[conjuntoConVariacion, 'Formato'] = data.loc[conjuntoConVariacion, 'FormatoIzq']
 
     # Obtener los valores que no tienen equivalencia en el diccionario para la columna 'A'
     formatos_sin_equivalencia = data['Formato'].loc[~data['Formato'].isin(dict_formats.keys())]

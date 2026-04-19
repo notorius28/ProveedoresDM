@@ -91,8 +91,15 @@ def extraer_edicion_del_formato(data, dict_formats):
     patronFormato = r'^(' + '|'.join(re.escape(term) for term in terminos) + r')\s+(.+)'
     data[['FormatoIzq', 'VariaciónDer']] = data['Formato'].str.extract(patronFormato, expand=True)
     conjuntoConVariacion = data['VariaciónDer'].notna()
-    data.loc[conjuntoConVariacion, 'Título'] = data.loc[conjuntoConVariacion, 'Título'].astype(str) + ' (EDICIÓN ' + data['FormatoIzq'] + ' ' + data.loc[conjuntoConVariacion, 'VariaciónDer'] + ')'
-    data.loc[conjuntoConVariacion, 'Formato'] = data['FormatoIzq']
+    data.loc[conjuntoConVariacion, 'Título'] = (
+        data.loc[conjuntoConVariacion, 'Título'].astype(str)
+        + ' (EDICIÓN '
+        + data.loc[conjuntoConVariacion, 'FormatoIzq']
+        + ' '
+        + data.loc[conjuntoConVariacion, 'VariaciónDer']
+        + ')'
+    )
+    data.loc[conjuntoConVariacion, 'Formato'] = data.loc[conjuntoConVariacion, 'FormatoIzq']
 
     return data
 

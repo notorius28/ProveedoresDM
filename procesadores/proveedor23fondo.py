@@ -55,7 +55,7 @@ def procesarExcel(data, nombre_hoja = None):
     data[['FormatoIzq', 'VariaciónDer']] = data['Formato'].str.extract(patronFormato, expand=True)
     conjuntoConVariacion = data['VariaciónDer'].notna()
     data.loc[conjuntoConVariacion, 'Título'] = data.loc[conjuntoConVariacion, 'Título'].astype(str) + ' (EDICIÓN VINILO ' + data.loc[conjuntoConVariacion, 'VariaciónDer'] + ')'
-    data.loc[conjuntoConVariacion, 'Formato'] = data['FormatoIzq']
+    data.loc[conjuntoConVariacion, 'Formato'] = data.loc[conjuntoConVariacion, 'FormatoIzq']
 
     # Si el formato es CDL, añadimos al título la descripción CD+LIBRO
     data.loc[data['Formato'] == 'CDL', 'Título'] += " (CD+LIBRO)"

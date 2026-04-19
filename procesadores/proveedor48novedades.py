@@ -92,10 +92,16 @@ def procesarExcel(data, nombre_hoja = None, multitab = False):
     # Ponemos como nulos los registros en 'VariaciónDer' cuyo valor sea "Vinilo", para que no se repita esa palabra
     data.loc[data['VariaciónDer'] == "VINILO", 'VariaciónDer'] = np.nan
     conjuntoConVariacion = data['VariaciónDer'].notna()
+    mask_titulo_lp = data['FormatoIzq'].isin(["LP", "LP VINILO"]) & conjuntoConVariacion
 
     # Solo ponemos la variante para los formatos LP en este proveedor
-    data.loc[(data['FormatoIzq'].isin(["LP", "LP VINILO"])) & (data['VariaciónDer'].notna()), 'Título'] = data.loc[conjuntoConVariacion, 'Título'].astype(str) + ' (EDICIÓN VINILO ' + data.loc[conjuntoConVariacion, 'VariaciónDer'] + ')'
-    data.loc[conjuntoConVariacion, 'Formato'] = data['FormatoIzq']
+    data.loc[mask_titulo_lp, 'Título'] = (
+        data.loc[mask_titulo_lp, 'Título'].astype(str)
+        + ' (EDICIÓN VINILO '
+        + data.loc[mask_titulo_lp, 'VariaciónDer']
+        + ')'
+    )
+    data.loc[conjuntoConVariacion, 'Formato'] = data.loc[conjuntoConVariacion, 'FormatoIzq']
 
     # Obtener los valores que no tienen equivalencia en el diccionario para la columna 'A'
     formatos_sin_equivalencia = data['Formato'].loc[~data['Formato'].isin(dict_formats.keys())]
