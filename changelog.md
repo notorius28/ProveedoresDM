@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.42] 2026/04/19
+
+## Correcciones
+
+- Corregidos los procesadores para evitar el error "Must have equal len keys and value when setting with an iterable" en el paso que trata de extraer ediciones especiales de vínilo en el título
+
+## Dependecias
+
+- Actualizado Streamlit a la versión 1.50
+- Añadidos más ficheros a .gitignore
+
 ## [1.0.41] 2026/04/13
 
 ## Novedades
